@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quizzes",
+  "info": {
+    "singularName": "quiz",
+    "pluralName": "quizzes",
+    "displayName": "Quiz"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": false
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "required": true,
+      "inversedBy": "quizzes"
+    },
+    "passingScore": {
+      "type": "integer",
+      "required": true
+    },
+    "timeLimit": {
+      "type": "integer",
+      "required": true
+    },
+    "isPublished": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "questions": {
+      "type": "component",
+      "component": "quiz.question",
+      "repeatable": true,
+      "required": true
+    }
+  }
+}
