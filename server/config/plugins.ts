@@ -29,7 +29,7 @@ const config = ({
     config: {
       jwtManagement: "refresh",
       sessions: {
-        httpOnly: true,
+        httpOnly: false,
       },
     },
   },
