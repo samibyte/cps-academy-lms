@@ -2,7 +2,27 @@
 
 import { apiClient, ApiError } from "@/lib/apiClient";
 import { setTokenInCookies } from "@/lib/tokenUtils";
-import { IRegisterPayload, registerZodSchema } from "@/zod/auth.validation";
+import {
+  ILoginPayload,
+  IRegisterPayload,
+  loginZodSchema,
+  registerZodSchema,
+} from "@/zod/auth.validation";
+
+interface StrapiLoginResponse {
+  jwt: string;
+  refreshToken: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    role?: {
+      id: number;
+      name: string;
+      type: string;
+    };
+  };
+}
 
 interface StrapiRegisterResponse {
   jwt: string;
@@ -76,3 +96,56 @@ export const registerAction = async (
     return { success: false, message };
   }
 };
+
+export const loginAction = async (
+  payload: ILoginPayload,
+  redirectPath?: string,
+): Promise<ActionResult> => {
+  // 1. Validate input
+  const parsed = loginZodSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid input",
+    };
+  }
+
+  try {
+    // 2. Authenticate with Strapi
+    const data = await apiClient<StrapiLoginResponse>("/api/auth/local", {
+      method: "POST",
+      body: {
+        identifier: parsed.data.identifier,
+        password: parsed.data.password,
+      },
+    });
+
+    // 3. Store tokens in httpOnly cookies
+    // 3. Store tokens in httpOnly cookies (30-day TTL when "remember me" is on)
+    const ttl = parsed.data.rememberMe
+      ? 60 * 60 * 24 * 30 // 30 days
+      : 60 * 60 * 24; // 1 day
+
+    await Promise.all([
+      setTokenInCookies("accessToken", data.jwt, ttl),
+      setTokenInCookies("refreshToken", data.refreshToken, ttl),
+    ]);
+
+    return {
+      success: true,
+      message: "Login successful",
+      redirectPath: redirectPath ?? "/dashboard/student",
+    };
+  } catch (error) {
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : "Login failed. Please try again.";
+
+    console.error("[loginAction]", error);
+
+    return { success: false, message };
+  }
+};
+

@@ -33,3 +33,11 @@ export const registerZodSchema = z
   });
 
 export type IRegisterPayload = z.infer<typeof registerZodSchema>;
+
+export const loginZodSchema = z.object({
+  identifier: z.string().trim().min(1, "ইউজারনেম বা ইমেইল প্রয়োজন"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional().default(false),
+});
+
+export type ILoginPayload = z.infer<typeof loginZodSchema>;
