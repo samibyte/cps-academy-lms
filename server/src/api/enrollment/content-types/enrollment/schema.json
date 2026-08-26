@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "enrollments",
+  "info": {
+    "singularName": "enrollment",
+    "pluralName": "enrollments",
+    "displayName": "Enrollment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true,
+      "inversedBy": "enrollments"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "required": true,
+      "inversedBy": "enrollments"
+    },
+    "enrolledAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "enrollment_status": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "active",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "completedAt": {
+      "type": "datetime"
+    },
+    "lastAccessedAt": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
