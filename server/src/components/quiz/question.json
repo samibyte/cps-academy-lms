@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_quiz_questions",
+  "info": {
+    "displayName": "Question"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "text",
+      "required": true
+    },
+    "points": {
+      "type": "integer",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "required": true
+    },
+    "correctOption": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "options": {
+      "type": "component",
+      "component": "quiz.option",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

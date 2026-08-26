@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_quiz_options",
+  "info": {
+    "displayName": "Option"
+  },
+  "options": {},
+  "attributes": {
+    "key": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}
