@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lessons",
+  "info": {
+    "singularName": "lesson",
+    "pluralName": "lessons",
+    "displayName": "Lesson"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "content": {
+      "type": "blocks",
+      "required": false
+    },
+    "videoUrl": {
+      "type": "string",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "required": true
+    },
+    "duration": {
+      "type": "integer",
+      "required": true
+    },
+    "isPublished": {
+      "type": "boolean",
+      "required": true
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "lessons"
+    },
+    "lesson_progresses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lesson-progress.lesson-progress",
+      "mappedBy": "lesson"
+    }
+  }
+}
