@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quiz_attempts",
+  "info": {
+    "singularName": "quiz-attempt",
+    "pluralName": "quiz-attempts",
+    "displayName": "QuizAttempt"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "quiz": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::quiz.quiz",
+      "required": true
+    },
+    "answers": {
+      "type": "json",
+      "required": true
+    },
+    "score": {
+      "type": "integer",
+      "required": true
+    },
+    "totalPoints": {
+      "type": "integer",
+      "required": true
+    },
+    "percentage": {
+      "type": "decimal",
+      "required": true
+    },
+    "passed": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "startedAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "submittedAt": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
