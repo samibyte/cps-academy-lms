@@ -9,6 +9,7 @@ import AuthBackgroundShape from "@/assets/svg/auth-background-shape";
 import LoginForm from "@/app/auth/_components/login-form";
 import Logo from "@/components/shared/ui/logo";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface LoginParams {
   searchParams: Promise<{ redirect?: string }>;
@@ -39,6 +40,25 @@ const Login = async ({ searchParams }: LoginParams) => {
         </CardHeader>
 
         <CardContent className="px-6">
+          <p className="text-muted-foreground mb-6 text-base">
+            Login with <span className="text-primary"> Demo Credentials</span>
+          </p>
+
+          {/* Quick Login Buttons */}
+          <div className="mb-6 flex flex-wrap gap-4 sm:gap-6">
+            <Button variant="outline" className="grow">
+              User
+            </Button>
+            <Button variant="outline" className="grow">
+              Instructor
+            </Button>
+            <Button variant="outline" className="grow">
+              Content Manager
+            </Button>
+            <Button variant="outline" className="grow">
+              Admin
+            </Button>
+          </div>
           {/* Login Form */}
           <div className="space-y-4">
             <LoginForm redirectPath={redirectPath} />
@@ -52,8 +72,6 @@ const Login = async ({ searchParams }: LoginParams) => {
                 একাউন্ট তৈরি করো
               </Link>
             </p>
-
-    
           </div>
         </CardContent>
       </Card>
