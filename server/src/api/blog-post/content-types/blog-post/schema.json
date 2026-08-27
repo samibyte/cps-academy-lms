@@ -30,7 +30,7 @@
     "coverImage": {
       "type": "media",
       "multiple": true,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
@@ -44,18 +44,6 @@
       "target": "plugin::users-permissions.user",
       "required": true,
       "inversedBy": "blog_posts"
-    },
-    "blog_status": {
-      "type": "enumeration",
-      "required": true,
-      "enum": [
-        "draft",
-        "published"
-      ]
-    },
-    "blog_publishedAt": {
-      "type": "datetime",
-      "required": true
     }
   }
 }

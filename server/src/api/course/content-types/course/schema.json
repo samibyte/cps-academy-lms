@@ -34,21 +34,6 @@
         "images"
       ]
     },
-    "instructor": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "required": true
-    },
-    "course_status": {
-      "type": "enumeration",
-      "required": true,
-      "enum": [
-        "draft",
-        "published",
-        "archived"
-      ]
-    },
     "enrollments": {
       "type": "relation",
       "relation": "oneToMany",
@@ -72,6 +57,13 @@
       "relation": "oneToMany",
       "target": "api::quiz.quiz",
       "mappedBy": "course"
+    },
+    "instructor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true,
+      "inversedBy": "courses"
     }
   }
 }

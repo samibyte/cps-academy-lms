@@ -34,11 +34,6 @@
       "type": "integer",
       "required": true
     },
-    "isPublished": {
-      "type": "boolean",
-      "required": true,
-      "default": false
-    },
     "questions": {
       "type": "component",
       "component": "quiz.question",

@@ -101,6 +101,12 @@
       "type": "boolean",
       "required": true,
       "default": true
+    },
+    "courses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course.course",
+      "mappedBy": "instructor"
     }
   }
 }
