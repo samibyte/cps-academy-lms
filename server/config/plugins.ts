@@ -29,7 +29,7 @@ const config = ({
     config: {
       jwtManagement: "refresh",
       sessions: {
-        httpOnly: false,
+        httpOnly: env("NODE_ENV") === "production",
       },
     },
   },

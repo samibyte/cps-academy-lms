@@ -26,7 +26,7 @@
     },
     "videoUrl": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "order": {
       "type": "integer",
@@ -34,7 +34,7 @@
     },
     "duration": {
       "type": "integer",
-      "required": true
+      "required": false
     },
     "isPublished": {
       "type": "boolean",
@@ -44,6 +44,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::course.course",
+      "required": true,
       "inversedBy": "lessons"
     },
     "lesson_progresses": {

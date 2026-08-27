@@ -43,7 +43,7 @@
     },
     "lastAccessedAt": {
       "type": "datetime",
-      "required": true
+      "required": false
     }
   }
 }

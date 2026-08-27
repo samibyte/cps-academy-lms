@@ -39,9 +39,9 @@
     },
     "completedAt": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
-    "lastViewdAt": {
+    "lastViewedAt": {
       "type": "datetime",
       "required": true
     }

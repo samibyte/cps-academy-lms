@@ -457,7 +457,8 @@ export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
     author: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
-    >;
+    > &
+      Schema.Attribute.Required;
     blog_publishedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
     blog_status: Schema.Attribute.Enumeration<['draft', 'published']> &
       Schema.Attribute.Required;
@@ -530,7 +531,7 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     shortDescription: Schema.Attribute.String & Schema.Attribute.Required;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     thumbnail: Schema.Attribute.Media<'images'>;
-    title: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -559,7 +560,7 @@ export interface ApiEnrollmentEnrollment extends Struct.CollectionTypeSchema {
       ['active', 'completed', 'cancelled']
     > &
       Schema.Attribute.Required;
-    lastAccessedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    lastAccessedAt: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -593,13 +594,13 @@ export interface ApiLessonProgressLessonProgress
     completed: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
-    completedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    completedAt: Schema.Attribute.DateTime;
     course: Schema.Attribute.Relation<'manyToOne', 'api::course.course'> &
       Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    lastViewdAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    lastViewedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
     lesson: Schema.Attribute.Relation<'manyToOne', 'api::lesson.lesson'> &
       Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -632,11 +633,12 @@ export interface ApiLessonLesson extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.Blocks;
-    course: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
+    course: Schema.Attribute.Relation<'manyToOne', 'api::course.course'> &
+      Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    duration: Schema.Attribute.Integer & Schema.Attribute.Required;
+    duration: Schema.Attribute.Integer;
     isPublished: Schema.Attribute.Boolean & Schema.Attribute.Required;
     lesson_progresses: Schema.Attribute.Relation<
       'oneToMany',
@@ -655,7 +657,7 @@ export interface ApiLessonLesson extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    videoUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    videoUrl: Schema.Attribute.String;
   };
 }
 
@@ -1195,6 +1197,7 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
+    avatar: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     blog_posts: Schema.Attribute.Relation<
       'oneToMany',
@@ -1214,6 +1217,10 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::enrollment.enrollment'
     >;
+    fullName: Schema.Attribute.String;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
     lesson_progresses: Schema.Attribute.Relation<
       'oneToMany',
       'api::lesson-progress.lesson-progress'
