@@ -36,10 +36,6 @@
       "type": "integer",
       "required": false
     },
-    "isPublished": {
-      "type": "boolean",
-      "required": true
-    },
     "course": {
       "type": "relation",
       "relation": "manyToOne",
