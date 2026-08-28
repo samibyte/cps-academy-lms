@@ -26,6 +26,7 @@ async function logoutAction() {
   "use server";
   await deleteCookie("accessToken");
   await deleteCookie("refreshToken");
+  await deleteCookie("userRole");
 }
 
 const Navbar = async () => {

@@ -5,7 +5,7 @@ const Logo = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex items-center gap-2.5", className)}>
       <Image
-        src={"/logo.avif"}
+        src={"/logo.png"}
         width={32}
         height={32}
         alt="cps academy logo"

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { apiClient, ApiError } from "@/lib/apiClient";
 import { redirect } from "next/navigation";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 /** Strapi role names used across the LMS. */
 export type StrapiRole =
@@ -11,20 +11,18 @@ export type StrapiRole =
   | "Instructor"
   | "Content Manager"
   | "Admin"
-  | string; // allow future roles without breaking
+  | string;
 
 export interface UserInfo {
   id: number;
   documentId: string;
-  /** Display name — fullName if set, otherwise username */
   name: string;
   email: string;
   role: StrapiRole;
-  /** Strapi media URL for the user avatar, or null if not set */
   avatar: string | null;
 }
 
-// ─── Internal Strapi shape ────────────────────────────────────────────────────
+//Internal Strapi shape
 
 interface StrapiMe {
   id: number;
@@ -36,7 +34,7 @@ interface StrapiMe {
   avatar?: { url: string } | null;
 }
 
-// ─── Service ─────────────────────────────────────────────────────────────────
+// Service
 
 /**
  * Server-side helper: reads the `accessToken` cookie, calls
@@ -50,10 +48,9 @@ export async function getUserInfo(): Promise<UserInfo | null> {
   if (!token) return null;
 
   try {
-    const me = await apiClient<StrapiMe>(
-      "/api/users/me?populate=role,avatar",
-      { token },
-    );
+    const me = await apiClient<StrapiMe>("/api/users/me?populate=role,avatar", {
+      token,
+    });
 
     const STRAPI_URL = process.env.API_URL ?? "";
     const avatarPath = me.avatar?.url ?? null;

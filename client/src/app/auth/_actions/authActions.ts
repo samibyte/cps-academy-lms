@@ -2,6 +2,12 @@
 
 import { apiClient, ApiError } from "@/lib/apiClient";
 import { setTokenInCookies } from "@/lib/tokenUtils";
+import { setCookie } from "@/lib/cookieUtils";
+import {
+  getDefaultDashboardRoute,
+  isValidRedirectForRole,
+  UserRole,
+} from "@/lib/authUtils";
 import {
   ILoginPayload,
   IRegisterPayload,
@@ -45,6 +51,20 @@ interface ActionResult {
   redirectPath?: string;
 }
 
+function getLoginRedirectPath(
+  roleName: string | undefined,
+  redirectPath?: string,
+) {
+  const role = roleName as UserRole | undefined;
+  if (!role) return "/dashboard/student";
+
+  if (redirectPath && isValidRedirectForRole(redirectPath, role)) {
+    return redirectPath;
+  }
+
+  return getDefaultDashboardRoute(role);
+}
+
 export const registerAction = async (
   payload: IRegisterPayload,
   redirectPath?: string,
@@ -77,6 +97,7 @@ export const registerAction = async (
     await Promise.all([
       setTokenInCookies("accessToken", data.jwt),
       setTokenInCookies("refreshToken", data.refreshToken),
+      setCookie("userRole", data.user.role?.name ?? "Student", 60 * 60 * 24),
     ]);
 
     return {
@@ -130,12 +151,13 @@ export const loginAction = async (
     await Promise.all([
       setTokenInCookies("accessToken", data.jwt, ttl),
       setTokenInCookies("refreshToken", data.refreshToken, ttl),
+      setCookie("userRole", data.user.role?.name ?? "", ttl),
     ]);
 
     return {
       success: true,
       message: "Login successful",
-      redirectPath: redirectPath ?? "/dashboard/student",
+      redirectPath: getLoginRedirectPath(data.user.role?.name, redirectPath),
     };
   } catch (error) {
     const message =
@@ -148,4 +170,3 @@ export const loginAction = async (
     return { success: false, message };
   }
 };
-
