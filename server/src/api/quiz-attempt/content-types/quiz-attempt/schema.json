@@ -13,9 +13,10 @@
   "attributes": {
     "student": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "required": true
+      "required": true,
+      "inversedBy": "quiz_attempts"
     },
     "quiz": {
       "type": "relation",
@@ -51,6 +52,11 @@
     "submittedAt": {
       "type": "datetime",
       "required": true
+    },
+    "maxAttempts": {
+      "type": "integer",
+      "required": true,
+      "default": 3
     }
   }
 }

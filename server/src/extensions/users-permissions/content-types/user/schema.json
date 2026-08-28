@@ -107,6 +107,12 @@
       "relation": "oneToMany",
       "target": "api::course.course",
       "mappedBy": "instructor"
+    },
+    "quiz_attempts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::quiz-attempt.quiz-attempt",
+      "mappedBy": "student"
     }
   }
 }

@@ -64,6 +64,27 @@
       "target": "plugin::users-permissions.user",
       "required": true,
       "inversedBy": "courses"
+    },
+    "level": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+      ]
+    },
+    "tags": {
+      "type": "json"
+    },
+    "price": {
+      "type": "integer",
+      "required": false
+    },
+    "isFree": {
+      "type": "boolean",
+      "required": true,
+      "default": false
     }
   }
 }
