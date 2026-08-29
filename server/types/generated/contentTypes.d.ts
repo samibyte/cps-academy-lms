@@ -681,15 +681,12 @@ export interface ApiQuizAttemptQuizAttempt extends Struct.CollectionTypeSchema {
       'api::quiz-attempt.quiz-attempt'
     > &
       Schema.Attribute.Private;
-    maxAttempts: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<3>;
     passed: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
     percentage: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    quiz: Schema.Attribute.Relation<'oneToOne', 'api::quiz.quiz'> &
+    quiz: Schema.Attribute.Relation<'manyToOne', 'api::quiz.quiz'> &
       Schema.Attribute.Required;
     score: Schema.Attribute.Integer & Schema.Attribute.Required;
     startedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
@@ -699,6 +696,7 @@ export interface ApiQuizAttemptQuizAttempt extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Required;
     submittedAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    timeTaken: Schema.Attribute.Integer & Schema.Attribute.Required;
     totalPoints: Schema.Attribute.Integer & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -726,10 +724,17 @@ export interface ApiQuizQuiz extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::quiz.quiz'> &
       Schema.Attribute.Private;
+    maxAttempts: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<3>;
     passingScore: Schema.Attribute.Integer & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     questions: Schema.Attribute.Component<'quiz.question', true> &
       Schema.Attribute.Required;
+    quiz_attempts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::quiz-attempt.quiz-attempt'
+    >;
     timeLimit: Schema.Attribute.Integer & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;

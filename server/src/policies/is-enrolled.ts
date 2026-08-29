@@ -138,13 +138,13 @@ export default async (
     );
   }
 
-  // If Student: check active enrollment
+  // If Student: check active/completed enrollment
   if (roleName === 'Student') {
     const enrollments = await strapi.documents('api::enrollment.enrollment').findMany({
       filters: {
         student: { id: user.id },
         course: { documentId: courseDocId },
-        enrollment_status: 'active',
+        enrollment_status: { $in: ['active', 'completed'] },
       },
     });
     return enrollments.length > 0;
