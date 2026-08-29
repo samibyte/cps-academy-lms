@@ -64,7 +64,7 @@ export default function DashboardShell({
 
       {/* Scrollable content */}
       <main className="flex-1 overflow-y-auto min-h-0">
-        <div className={cn("mx-auto max-w-7xl w-full h-full flex flex-col gap-6 p-6")}>
+        <div className={cn("mx-auto max-w-5xl xl:max-w-6xl w-full h-full flex flex-col gap-6 p-6")}>
           {children}
         </div>
       </main>

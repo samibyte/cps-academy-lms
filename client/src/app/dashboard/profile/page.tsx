@@ -79,10 +79,11 @@ export default async function ProfilePage() {
   };
 
   return (
-    <div className="relative p-6 sm:p-8 space-y-8 min-h-screen bg-grid-cyber">
+    <div className="relative p-6 sm:p-8 min-h-screen bg-grid-cyber">
       {/* Decorative gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
+      <div className="mx-auto max-w-5xl xl:max-w-6xl w-full space-y-8">
       {/* Breadcrumb back navigation */}
       <div className="flex items-center gap-2">
         <Button
@@ -342,6 +343,7 @@ export default async function ProfilePage() {
             </Card>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -43,7 +43,8 @@ export async function getMyEnrollments(token: string, studentDocId?: string) {
       `&populate[course][populate][lessons][fields][0]=id` +
       `&populate[course][populate][lessons][fields][1]=order` +
       `&populate[course][populate][lessons][fields][2]=title` +
-      `&filters[enrollment_status][$eq]=active` +
+      `&filters[enrollment_status][$in][0]=active` +
+      `&filters[enrollment_status][$in][1]=completed` +
       `&pagination[pageSize]=50` +
       studentFilter,
     { token },
@@ -77,7 +78,15 @@ export async function getCourseWithLessons(courseId: string, token: string) {
 
 export async function getLesson(lessonId: string, token: string) {
   return apiClient<StrapiSingleResponse<Lesson>>(
-    `/api/lessons/${lessonId}?populate=*`,
+    `/api/lessons/${lessonId}` +
+      `?fields[0]=title` +
+      `&fields[1]=slug` +
+      `&fields[2]=order` +
+      `&fields[3]=duration` +
+      `&fields[4]=videoUrl` +
+      `&fields[5]=content` +
+      `&fields[6]=createdAt` +
+      `&fields[7]=updatedAt`,
     { token },
   );
 }
@@ -105,10 +114,76 @@ export async function getQuizForCourse(
   token: string,
 ): Promise<(Quiz & { id: number; documentId: string }) | null> {
   const res = await apiClient<StrapiListResponse<Quiz>>(
-    `/api/quizzes?filters[course][documentId][$eq]=${courseId}&populate[questions][populate][options]=*&pagination[pageSize]=1`,
+    `/api/quizzes?filters[course][documentId][$eq]=${courseId}` +
+      `&populate[questions][populate][options]=*` +
+      `&fields[0]=title` +
+      `&fields[1]=description` +
+      `&fields[2]=passingScore` +
+      `&fields[3]=timeLimit` +
+      `&fields[4]=maxAttempts` +
+      `&pagination[pageSize]=1`,
     { token },
   );
   return res.data[0] ?? null;
+}
+
+/**
+ * Build a map of { courseDocId -> completedLessonCount } for an array of
+ * enrollments.  Used by both the overview and my-courses pages to avoid
+ * duplicating the Promise.all pattern.
+ */
+export async function buildProgressMap(
+  enrollments: { course?: { documentId: string } | null }[],
+  token: string,
+): Promise<Record<string, number>> {
+  const progressMap: Record<string, number> = {};
+  await Promise.all(
+    enrollments.map(async (enrollment) => {
+      const courseDocId = enrollment.course?.documentId;
+      if (!courseDocId) return;
+      try {
+        const progressRes = await getLessonProgresses(courseDocId, token);
+        progressMap[courseDocId] = progressRes.data.filter((p) => p.completed).length;
+      } catch {
+        progressMap[courseDocId] = 0;
+      }
+    }),
+  );
+  return progressMap;
+}
+
+/**
+ * Update the lastAccessedAt timestamp of the active enrollment for a given course.
+ * This is called when a student opens the course page or views any lesson page.
+ */
+export async function touchEnrollmentLastAccessed(
+  courseDocId: string,
+  studentDocId: string,
+  token: string,
+): Promise<void> {
+  try {
+    const enrollmentsRes = await apiClient<{ data: Array<{ id: number; documentId: string }> }>(
+      `/api/enrollments` +
+        `?filters[student][documentId][$eq]=${studentDocId}` +
+        `&filters[course][documentId][$eq]=${courseDocId}` +
+        `&pagination[pageSize]=1`,
+      { token },
+    );
+    const enrollment = enrollmentsRes.data[0];
+    if (enrollment) {
+      await apiClient(`/api/enrollments/${enrollment.documentId}`, {
+        method: "PUT",
+        token,
+        body: {
+          data: {
+            lastAccessedAt: new Date().toISOString(),
+          },
+        },
+      });
+    }
+  } catch (err) {
+    console.error("[api] Failed to touch enrollment lastAccessedAt", err);
+  }
 }
 
 // Quiz attempts
