@@ -3,6 +3,9 @@ import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import QueryProviders from "@/providers/queryClient";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
+import ForbiddenToast from "@/components/ForbiddenToast";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-latin" });
 
@@ -10,7 +13,7 @@ const hindSiliguri = Hind_Siliguri({
   weight: "400",
   subsets: ["bengali"],
   variable: "--font-hind-siliguri",
-});
+  });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +45,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <QueryProviders>{children}</QueryProviders>
+        <QueryProviders>
+          <TooltipProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+            <ForbiddenToast />
+          </TooltipProvider>
+        </QueryProviders>
       </body>
     </html>
   );
