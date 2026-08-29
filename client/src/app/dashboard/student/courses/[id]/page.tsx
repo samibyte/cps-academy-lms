@@ -116,17 +116,8 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
                 const isCompleted = completedLessonDocIds.has(lesson.documentId);
                 const isLocked = idx > 0 && !completedLessonDocIds.has(lessons[idx - 1].documentId);
 
-                return (
-                  <div
-                    key={lesson.id}
-                    className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
-                      isCompleted
-                        ? "border-emerald-500/20 bg-emerald-500/5"
-                        : isLocked
-                          ? "border-border/30 bg-muted/10 opacity-60"
-                          : "border-border/30 bg-card/50 hover:border-primary/20 hover:bg-card/80"
-                    }`}
-                  >
+                const content = (
+                  <>
                     {/* Status icon */}
                     <div className="shrink-0">
                       {isCompleted ? (
@@ -144,18 +135,15 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
                         <span className="text-[10px] font-mono text-muted-foreground/60">
                           {String(idx + 1).padStart(2, "0")}.
                         </span>
-                        {isLocked ? (
-                          <span className="text-sm font-medium text-muted-foreground truncate">
-                            {lesson.title}
-                          </span>
-                        ) : (
-                          <Link
-                            href={`/dashboard/student/courses/${id}/lessons/${lesson.documentId}`}
-                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors truncate"
-                          >
-                            {lesson.title}
-                          </Link>
-                        )}
+                        <span
+                          className={`text-sm truncate ${
+                            isLocked
+                              ? "font-medium text-muted-foreground"
+                              : "font-semibold text-foreground group-hover:text-primary transition-colors"
+                          }`}
+                        >
+                          {lesson.title}
+                        </span>
                       </div>
                       {lesson.duration && (
                         <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono mt-0.5">
@@ -178,7 +166,33 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
                         </Badge>
                       )}
                     </div>
-                  </div>
+                  </>
+                );
+
+                const containerClassName = `flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 group ${
+                  isCompleted
+                    ? "border-emerald-500/20 bg-emerald-500/5"
+                    : isLocked
+                      ? "border-border/30 bg-muted/10 opacity-60 cursor-not-allowed"
+                      : "border-border/30 bg-card/50 hover:border-primary/20 hover:bg-card/80 cursor-pointer"
+                }`;
+
+                if (isLocked) {
+                  return (
+                    <div key={lesson.id} className={containerClassName}>
+                      {content}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={lesson.id}
+                    href={`/dashboard/student/courses/${id}/lessons/${lesson.documentId}`}
+                    className={containerClassName}
+                  >
+                    {content}
+                  </Link>
                 );
               })}
             </div>
