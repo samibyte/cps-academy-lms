@@ -5,15 +5,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   BookOpen,
-  GraduationCap,
   LayoutDashboard,
   LogOut,
   ShieldCheck,
   ChevronRight,
   User,
-  Users,
   FileText,
-  Settings,
   PlusCircle,
 } from "lucide-react";
 import {
@@ -49,28 +46,26 @@ type NavLink = {
 // ─── Role-based nav configs ───────────────────────────────────────────────────
 
 const STUDENT_LINKS: NavLink[] = [
-  { href: "/dashboard/student", label: "ওভারভিউ.cpp", icon: LayoutDashboard },
-  { href: "/dashboard/student/my-courses", label: "আমার কোর্সসমূহ.h", icon: BookOpen },
+  { href: "/dashboard/student", label: "ওভারভিউ", icon: LayoutDashboard },
+  { href: "/dashboard/student/my-courses", label: "আমার কোর্সসমূহ", icon: BookOpen },
 ];
 
 const INSTRUCTOR_LINKS: NavLink[] = [
-  { href: "/dashboard/instructor", label: "ওভারভিউ.cpp", icon: LayoutDashboard },
-  { href: "/dashboard/instructor/courses", label: "আমার কোর্সসমূহ.h", icon: BookOpen },
-  { href: "/dashboard/instructor/courses/new", label: "কোর্স তৈরি.py", icon: PlusCircle },
+  { href: "/dashboard/instructor", label: "ওভারভিউ", icon: LayoutDashboard },
+  { href: "/dashboard/instructor/courses", label: "আমার কোর্সসমূহ", icon: BookOpen },
+  { href: "/dashboard/instructor/courses/new", label: "কোর্স তৈরি", icon: PlusCircle },
 ];
 
 const CONTENT_MANAGER_LINKS: NavLink[] = [
-  { href: "/dashboard/content-manager", label: "ওভারভিউ.cpp", icon: LayoutDashboard },
-  { href: "/dashboard/content-manager/courses", label: "সব কোর্সসমূহ.h", icon: BookOpen },
-  { href: "/dashboard/content-manager/lessons", label: "লেসনসমূহ.md", icon: FileText },
+  { href: "/dashboard/content-manager", label: "ওভারভিউ", icon: LayoutDashboard },
+  { href: "/dashboard/content-manager/courses", label: "সব কোর্সসমূহ", icon: BookOpen },
+  { href: "/dashboard/content-manager/blog", label: "ব্লগ", icon: FileText },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
-  { href: "/dashboard/admin", label: "ওভারভিউ.cpp", icon: LayoutDashboard },
-  { href: "/dashboard/admin/users", label: "ইউজারদের তালিকা.json", icon: Users },
-  { href: "/dashboard/admin/courses", label: "সব কোর্সসমূহ.h", icon: BookOpen },
-  { href: "/dashboard/admin/enrollments", label: "এনরোলমেন্টসমূহ.db", icon: GraduationCap },
-  { href: "/dashboard/admin/settings", label: "সেটিংস.conf", icon: Settings },
+  { href: "/dashboard/admin", label: "ওভারভিউ", icon: LayoutDashboard },
+  { href: "/dashboard/admin/courses", label: "সব কোর্সসমূহ", icon: BookOpen },
+  { href: "/dashboard/admin/blog", label: "ব্লগ", icon: FileText },
 ];
 
 function getNavLinks(role: StrapiRole): NavLink[] {
@@ -207,7 +202,7 @@ export default function DashboardSidebar({
                 >
                   <div className="flex items-center gap-3">
                     <User className="size-4 text-muted-foreground group-hover:text-foreground" />
-                    <span className="font-medium">আমার প্রোফাইল.json</span>
+                    <span className="font-medium">আমার প্রোফাইল</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>

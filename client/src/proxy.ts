@@ -6,38 +6,58 @@ import {
   type UserRole,
 } from "./lib/authUtils";
 
-// ─── Constants
+//Constants
 
 const API_URL = process.env.API_URL;
 
+const VALID_ROLES = new Set<UserRole>([
+  "Admin",
+  "Instructor",
+  "Content Manager",
+  "Student",
+]);
+
+/** Cast a raw role string to UserRole if it is one of the known values. */
+function parseRole(raw: string | null | undefined): UserRole | null {
+  const trimmed = raw?.trim();
+  return VALID_ROLES.has(trimmed as UserRole) ? (trimmed as UserRole) : null;
+}
+
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const REFRESH_TOKEN_COOKIE = "refreshToken";
+const USER_ROLE_COOKIE = "userRole";
 
 const PROTECTED_ROUTE_PREFIXES = ["/dashboard"];
 
 /** Preemptively refresh the access token when it expires within this window. */
-const TOKEN_REFRESH_WINDOW_SECONDS = Number(process.env.TOKEN_REFRESH_WINDOW_SECONDS!);
+const TOKEN_REFRESH_WINDOW_SECONDS = Number(
+  process.env.TOKEN_REFRESH_WINDOW_SECONDS,
+);
 
 /** TTL for the refresh-token cookie (30 days). */
-const REFRESH_TOKEN_MAX_AGE = Number(process.env.REFRESH_TOKEN_MAX_AGE!);
+const REFRESH_TOKEN_MAX_AGE = Number(process.env.REFRESH_TOKEN_MAX_AGE);
 
 /** Fallback TTL for the access-token cookie when `exp` is unreadable. */
-const ACCESS_TOKEN_FALLBACK_MAX_AGE = Number(process.env.ACCESS_TOKEN_FALLBACK_MAX_AGE!);
+const ACCESS_TOKEN_FALLBACK_MAX_AGE = Number(
+  process.env.ACCESS_TOKEN_FALLBACK_MAX_AGE,
+);
 
-// ─── Types
+// Types
 
 interface RefreshResponse {
   jwt: string;
   refreshToken: string;
 }
 
+/**
+ * NOTE: Strapi 5 JWTs do NOT embed the user's role.
+ * The `role` must always be fetched from `/api/users/me?populate=role`.
+ */
 interface JwtPayload {
   exp?: number;
-  id?: number;
-  role?: { name?: string };
 }
 
-// ─── JWT Helpers
+//JWT Helpers
 
 function decodeJwtPayload(token: string): JwtPayload | null {
   try {
@@ -55,19 +75,19 @@ function getJwtExpiry(token: string): number | null {
   return typeof payload?.exp === "number" ? payload.exp : null;
 }
 
-function isTokenExpired(token: string): boolean {
+/**
+ * Returns true if the token is expired or will expire within `windowSeconds`.
+ * Pass `0` for a strict expiry check (no refresh buffer).
+ */
+function needsTokenRefresh(
+  token: string,
+  windowSeconds = TOKEN_REFRESH_WINDOW_SECONDS,
+): boolean {
   const exp = getJwtExpiry(token);
-  return !exp || exp < Math.floor(Date.now() / 1000);
+  return !exp || exp <= Math.floor(Date.now() / 1000) + windowSeconds;
 }
 
-function needsTokenRefresh(token: string): boolean {
-  const exp = getJwtExpiry(token);
-  return (
-    !exp || exp <= Math.floor(Date.now() / 1000) + TOKEN_REFRESH_WINDOW_SECONDS
-  );
-}
-
-// ─── Route Helpers
+//Route Helpers
 
 function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_ROUTE_PREFIXES.some(
@@ -76,36 +96,34 @@ function isProtectedRoute(pathname: string): boolean {
 }
 
 /**
- * Checks if the user's role is authorised for the given route.
- * Uses `getRouteOwner` from authUtils — if the route belongs to a specific
- * role and the user's role doesn't match, access is denied.
- * Admin always has access to every role-gated route.
+ * Returns true if `role` is authorised to access `pathname`.
+ * Admin always passes; other roles must match the route's designated owner.
  */
 function isRoleAllowed(pathname: string, role: UserRole | null): boolean {
   const routeOwner = getRouteOwner(pathname);
+
   if (!routeOwner) return true;
-
   if (!role) return false;
-  if (role === "Admin") return true;
 
-  return role === routeOwner;
+  return role === "Admin" || role === routeOwner;
 }
 
 function getSafeRedirectPath(request: NextRequest): string {
   const path = `${request.nextUrl.pathname}${request.nextUrl.search}`;
-  // Prevent open redirects — must start with a single slash
   return path.startsWith("/") && !path.startsWith("//") ? path : "/";
 }
 
-// ─── Response Helpers
-
+// Response Helpers
 function redirectToLogin(request: NextRequest): NextResponse {
   const loginUrl = new URL("/auth/login", request.url);
   loginUrl.searchParams.set("redirect", getSafeRedirectPath(request));
   return NextResponse.redirect(loginUrl);
 }
 
-function redirectTo403(request: NextRequest, role: UserRole | null = null): NextResponse {
+function redirectTo403(
+  request: NextRequest,
+  role: UserRole | null = null,
+): NextResponse {
   const dest = role ? getDefaultDashboardRoute(role) : "/";
   const redirectUrl = new URL(dest, request.url);
   redirectUrl.searchParams.set("error", "forbidden");
@@ -115,51 +133,70 @@ function redirectTo403(request: NextRequest, role: UserRole | null = null): Next
 /** Compute the accessToken cookie maxAge from the JWT `exp` claim. */
 function getAccessTokenMaxAge(jwt: string): number {
   const exp = getJwtExpiry(jwt);
-  if (!exp) return ACCESS_TOKEN_FALLBACK_MAX_AGE;
-  return Math.max(exp - Math.floor(Date.now() / 1000), 0);
+  return exp
+    ? Math.max(exp - Math.floor(Date.now() / 1000), 0)
+    : ACCESS_TOKEN_FALLBACK_MAX_AGE;
 }
 
-/** Atomically set both auth cookies on any NextResponse. */
+const isProduction = process.env.NODE_ENV === "production";
+
+const BASE_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "lax" as const,
+  path: "/",
+};
+
+/** Atomically set both auth cookies and optionally the userRole cookie. */
 function setAuthCookies(
   response: NextResponse,
   jwt: string,
   refreshToken: string,
   role?: string,
 ): void {
-  const isProduction = process.env.NODE_ENV === "production";
+  const accessMaxAge = getAccessTokenMaxAge(jwt);
 
   response.cookies.set(ACCESS_TOKEN_COOKIE, jwt, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
-    maxAge: getAccessTokenMaxAge(jwt),
+    ...BASE_COOKIE_OPTIONS,
+    maxAge: accessMaxAge,
   });
-
   response.cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
+    ...BASE_COOKIE_OPTIONS,
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 
   if (role) {
-    response.cookies.set("userRole", role, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-      path: "/",
-      maxAge: REFRESH_TOKEN_MAX_AGE,
+    // userRole must not outlive the access token — role changes take effect
+    // on the next refresh, not after the 30-day refresh-token window.
+    response.cookies.set(USER_ROLE_COOKIE, role, {
+      ...BASE_COOKIE_OPTIONS,
+      maxAge: accessMaxAge,
     });
   }
 }
 
-/** Delete both auth cookies (used on refresh failure). */
+/** Delete all auth cookies (used on refresh failure). */
 function clearAuthCookies(response: NextResponse): void {
   response.cookies.delete(ACCESS_TOKEN_COOKIE);
   response.cookies.delete(REFRESH_TOKEN_COOKIE);
-  response.cookies.delete("userRole");
+  response.cookies.delete(USER_ROLE_COOKIE);
+}
+
+/**
+ * Write the userRole cookie onto a response only when it isn't already cached
+ * in the request. Keeps the maxAge in sync with the current access token.
+ */
+function cacheRoleCookie(
+  request: NextRequest,
+  response: NextResponse,
+  role: UserRole,
+  accessToken: string,
+): void {
+  if (request.cookies.get(USER_ROLE_COOKIE)?.value) return;
+  response.cookies.set(USER_ROLE_COOKIE, role, {
+    ...BASE_COOKIE_OPTIONS,
+    maxAge: getAccessTokenMaxAge(accessToken),
+  });
 }
 
 // Token Refresh
@@ -172,18 +209,13 @@ async function refreshAccessToken(
     return null;
   }
 
-  const url = `${API_URL}/api/auth/refresh`;
-  console.log("[proxy:refresh] → POST", url);
-
   try {
-    const res = await fetch(url, {
+    const res = await fetch(`${API_URL}/api/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
       cache: "no-store",
     });
-
-    console.log("[proxy:refresh] ← status:", res.status);
 
     if (!res.ok) {
       const body = await res.text().catch(() => "n/a");
@@ -192,7 +224,6 @@ async function refreshAccessToken(
     }
 
     const data = (await res.json()) as RefreshResponse;
-    console.log("[proxy:refresh] Response keys:", Object.keys(data));
 
     if (!data.jwt || !data.refreshToken) {
       console.error(
@@ -202,7 +233,6 @@ async function refreshAccessToken(
       return null;
     }
 
-    console.log("[proxy:refresh] ✓ Refresh successful");
     return data;
   } catch (error) {
     console.error("[proxy:refresh] Fetch threw:", error);
@@ -211,154 +241,173 @@ async function refreshAccessToken(
 }
 
 /**
- * After a successful refresh, rebuild the request `cookie` header so that
- * downstream Server Components / Route Handlers see the fresh tokens.
+ * Rebuild the request `cookie` header with fresh tokens so downstream
+ * Server Components / Route Handlers see the updated values.
  */
 function buildRefreshedHeaders(
   request: NextRequest,
-  refreshedData: RefreshResponse,
+  refreshed: RefreshResponse,
+  role?: UserRole,
 ): Headers {
   const headers = new Headers(request.headers);
 
-  const cookieParts: string[] = [];
-  for (const c of request.cookies.getAll()) {
-    if (c.name !== ACCESS_TOKEN_COOKIE && c.name !== REFRESH_TOKEN_COOKIE) {
-      cookieParts.push(`${c.name}=${c.value}`);
-    }
-  }
-  cookieParts.push(`${ACCESS_TOKEN_COOKIE}=${refreshedData.jwt}`);
-  cookieParts.push(`${REFRESH_TOKEN_COOKIE}=${refreshedData.refreshToken}`);
+  const AUTH_COOKIES = new Set([
+    ACCESS_TOKEN_COOKIE,
+    REFRESH_TOKEN_COOKIE,
+    USER_ROLE_COOKIE,
+  ]);
+
+  const cookieParts = request.cookies
+    .getAll()
+    .filter((c) => !AUTH_COOKIES.has(c.name))
+    .map((c) => `${c.name}=${c.value}`);
+
+  cookieParts.push(`${ACCESS_TOKEN_COOKIE}=${refreshed.jwt}`);
+  cookieParts.push(`${REFRESH_TOKEN_COOKIE}=${refreshed.refreshToken}`);
+  if (role) cookieParts.push(`${USER_ROLE_COOKIE}=${role}`);
 
   headers.set("cookie", cookieParts.join("; "));
   return headers;
 }
 
-/** Get the user's role from raw cookie or query from API if missing. */
+// Role Resolution
+/** Resolve the user's role — cookie cache first, then Strapi API. */
 async function getUserRole(
   request: NextRequest,
   token: string,
 ): Promise<UserRole | null> {
-  const cookieRole = request.cookies.get("userRole")?.value as UserRole | undefined;
-  if (cookieRole) return cookieRole;
+  const cached = parseRole(request.cookies.get(USER_ROLE_COOKIE)?.value);
+  if (cached) return cached;
 
   if (!API_URL) return null;
 
   try {
     const res = await fetch(`${API_URL}/api/users/me?populate=role`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
-
     if (res.ok) {
       const data = await res.json();
-      return (data.role?.name as UserRole) ?? null;
+      return parseRole(data.role?.name);
     }
   } catch (error) {
-    console.error("[proxy:getUserRole] Fallback query threw error:", error);
+    console.error("[proxy:getUserRole] Strapi query threw:", error);
   }
+
   return null;
 }
 
-// ─── Main Proxy
+// Protected Route Handler
+/**
+ * Handle navigation to /dashboard (with or without trailing slash):
+ * redirect to the role's default sub-route.
+ */
+function isDashboardRoot(pathname: string): boolean {
+  return pathname === "/dashboard" || pathname === "/dashboard/";
+}
+
+async function handleProtectedRoute(
+  request: NextRequest,
+  accessToken: string | undefined,
+  refreshToken: string | undefined,
+): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+
+  // ── Path 1: Valid, non-expiring access token
+  if (accessToken && !needsTokenRefresh(accessToken)) {
+    const role = await getUserRole(request, accessToken);
+
+    if (isDashboardRoot(pathname)) {
+      const dest = role ? getDefaultDashboardRoute(role) : null;
+      if (!dest) return redirectTo403(request, role);
+
+      const destUrl = new URL(dest, request.url);
+      destUrl.search = request.nextUrl.search;
+      const response = NextResponse.redirect(destUrl);
+      if (role) cacheRoleCookie(request, response, role, accessToken);
+      return response;
+    }
+
+    if (!isRoleAllowed(pathname, role)) return redirectTo403(request, role);
+
+    const response = NextResponse.next();
+    if (role) cacheRoleCookie(request, response, role, accessToken);
+    return response;
+  }
+
+  // ── Path 2: Attempt silent token refresh
+  if (refreshToken) {
+    const refreshed = await refreshAccessToken(refreshToken);
+
+    if (!refreshed) {
+      const response = redirectToLogin(request);
+      clearAuthCookies(response);
+      return response;
+    }
+
+    const role = await getUserRole(request, refreshed.jwt);
+
+    if (isDashboardRoot(pathname)) {
+      const dest = role ? getDefaultDashboardRoute(role) : null;
+      if (!dest) return redirectTo403(request, role);
+
+      const destUrl = new URL(dest, request.url);
+      destUrl.search = request.nextUrl.search;
+      const response = NextResponse.redirect(destUrl);
+      setAuthCookies(
+        response,
+        refreshed.jwt,
+        refreshed.refreshToken,
+        role ?? undefined,
+      );
+      return response;
+    }
+
+    if (!isRoleAllowed(pathname, role)) return redirectTo403(request, role);
+
+    const response = NextResponse.next({
+      request: {
+        headers: buildRefreshedHeaders(request, refreshed, role ?? undefined),
+      },
+    });
+    setAuthCookies(
+      response,
+      refreshed.jwt,
+      refreshed.refreshToken,
+      role ?? undefined,
+    );
+    return response;
+  }
+
+  // ── Path 3: No tokens at all
+  return redirectToLogin(request);
+}
+
+// Main Proxy
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  console.log(accessToken, "acessteoken");
-  console.log(refreshToken, "refreshtoken");
-  // ── Protected routes
   if (isProtectedRoute(pathname)) {
-    // 1. Valid, non-expiring access token → fast path
-    if (accessToken && !needsTokenRefresh(accessToken)) {
-      const role = await getUserRole(request, accessToken);
-
-      if (pathname === "/dashboard") {
-        const dest = role ? getDefaultDashboardRoute(role) : null;
-        if (dest) {
-          const destUrl = new URL(dest, request.url);
-          destUrl.search = request.nextUrl.search;
-          return NextResponse.redirect(destUrl);
-        }
-        return redirectTo403(request, role);
-      }
-
-      if (!isRoleAllowed(pathname, role)) return redirectTo403(request, role);
-
-      // If cookie was missing but we successfully fetched the role, write it back to Cache it
-      const cookieRole = request.cookies.get("userRole")?.value;
-      if (!cookieRole && role) {
-        const response = NextResponse.next();
-        const isProduction = process.env.NODE_ENV === "production";
-        response.cookies.set("userRole", role, {
-          httpOnly: true,
-          secure: isProduction,
-          sameSite: "lax",
-          path: "/",
-          maxAge: REFRESH_TOKEN_MAX_AGE,
-        });
-        return response;
-      }
-
-      return NextResponse.next();
-    }
-
-    // 2. Attempt silent token refresh
-    if (refreshToken) {
-      const refreshed = await refreshAccessToken(refreshToken);
-
-      if (refreshed) {
-        const role = await getUserRole(request, refreshed.jwt);
-
-        // Handle /dashboard redirect with fresh cookies
-        if (pathname === "/dashboard") {
-          const dest = role ? getDefaultDashboardRoute(role) : null;
-          if (!dest) return redirectTo403(request, role);
-
-          const destUrl = new URL(dest, request.url);
-          destUrl.search = request.nextUrl.search;
-          const response = NextResponse.redirect(destUrl);
-          setAuthCookies(response, refreshed.jwt, refreshed.refreshToken, role ?? undefined);
-          return response;
-        }
-
-        // Role gate check with refreshed token
-        if (!isRoleAllowed(pathname, role)) {
-          return redirectTo403(request, role);
-        }
-
-        // Continue to the route with refreshed headers + cookies
-        const response = NextResponse.next({
-          request: { headers: buildRefreshedHeaders(request, refreshed) },
-        });
-        setAuthCookies(response, refreshed.jwt, refreshed.refreshToken, role ?? undefined);
-        return response;
-      }
-
-      // Refresh failed — clear stale cookies and redirect to login
-      const response = redirectToLogin(request);
-      clearAuthCookies(response);
-      return response;
-    }
-
-    // 3. No tokens at all → login
-    return redirectToLogin(request);
+    return handleProtectedRoute(request, accessToken, refreshToken);
   }
 
-  // ── Auth routes
-  // Redirect already-authenticated users away from auth pages
-  if (isAuthRoute(pathname) && accessToken && !isTokenExpired(accessToken)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Redirect already-authenticated users away from auth pages.
+  // windowSeconds=0 → strict expiry check, no preemptive refresh buffer.
+  if (
+    isAuthRoute(pathname) &&
+    accessToken &&
+    !needsTokenRefresh(accessToken, 0)
+  ) {
+    const role = await getUserRole(request, accessToken);
+    const dest = role ? getDefaultDashboardRoute(role) : "/dashboard";
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
   return NextResponse.next();
 }
-
-// Config 
-
 export const config = {
   matcher: [
     /*

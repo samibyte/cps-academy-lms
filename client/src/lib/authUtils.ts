@@ -1,5 +1,16 @@
 export type UserRole = "Admin" | "Instructor" | "Content Manager" | "Student";
 
+const VALID_ROLES = new Set<UserRole>(["Admin", "Instructor", "Content Manager", "Student"]);
+
+/** Returns the value typed as UserRole if it is a known role, otherwise null. */
+export const parseRole = (role?: string | null): UserRole | null => {
+  const trimmed = role?.trim();
+  return VALID_ROLES.has(trimmed as UserRole) ? (trimmed as UserRole) : null;
+};
+
+/** @deprecated Use parseRole instead. */
+export const normalizeRoleName = parseRole;
+
 export const authRoutes = ["/auth/login", "/auth/register"];
 
 export const isAuthRoute = (pathname: string) => {
@@ -58,37 +69,23 @@ export const getRouteOwner = (pathname: string): UserRole | null => {
   return null; // public route
 };
 
-export const getDefaultDashboardRoute = (role: UserRole) => {
-  if (role === "Admin") {
-    return "/dashboard/admin";
+export const getDefaultDashboardRoute = (role: UserRole | string): string => {
+  switch (role as UserRole) {
+    case "Admin":           return "/dashboard/admin";
+    case "Instructor":      return "/dashboard/instructor";
+    case "Content Manager": return "/dashboard/content-manager";
+    case "Student":         return "/dashboard/student";
+    default:                return "/";
   }
-  if (role === "Instructor") {
-    return "/dashboard/instructor";
-  }
-  if (role === "Content Manager") {
-    return "/dashboard/content-manager";
-  }
-  if (role === "Student") {
-    return "/dashboard/student";
-  }
-
-  return "/";
 };
 
 export const isValidRedirectForRole = (
   redirectPath: string,
-  role: UserRole,
-) => {
-  const sanitizedRedirectPath = redirectPath.split("?")[0] || redirectPath;
-  const routeOwner = getRouteOwner(sanitizedRedirectPath);
-
-  if (routeOwner === null) {
-    return true;
-  }
-
-  if (routeOwner === role) {
-    return true;
-  }
-
-  return false;
+  role: UserRole | string,
+): boolean => {
+  const sanitizedPath = redirectPath.split("?")[0] || redirectPath;
+  const routeOwner = getRouteOwner(sanitizedPath);
+  // Public route — always valid
+  if (!routeOwner) return true;
+  return routeOwner === role;
 };
