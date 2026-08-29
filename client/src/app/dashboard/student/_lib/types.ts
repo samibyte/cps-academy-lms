@@ -137,7 +137,8 @@ export interface Quiz {
   title: string;
   description: string | null;
   passingScore: number;
-  timeLimit: number; // minutes
+  timeLimit: number;
+  maxAttempts: number;
   questions: QuizQuestion[];
 }
 
@@ -149,7 +150,8 @@ export interface QuizAttempt {
   totalPoints: number;
   percentage: number;
   passed: boolean;
-  maxAttempts: number;
+  /** Elapsed time in **seconds** */
+  timeTaken: number;
   startedAt: string;
   submittedAt: string;
   quiz: Pick<Quiz, "id" | "documentId"> | null;
