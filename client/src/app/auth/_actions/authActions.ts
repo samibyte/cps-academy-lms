@@ -6,6 +6,7 @@ import { setCookie } from "@/lib/cookieUtils";
 import {
   getDefaultDashboardRoute,
   isValidRedirectForRole,
+  parseRole,
   UserRole,
 } from "@/lib/authUtils";
 import {
@@ -15,34 +16,34 @@ import {
   registerZodSchema,
 } from "@/zod/auth.validation";
 
-interface StrapiLoginResponse {
+const API_URL = process.env.API_URL;
+
+interface StrapiAuthResponse {
   jwt: string;
   refreshToken: string;
   user: {
     id: number;
     username: string;
     email: string;
-    role?: {
-      id: number;
-      name: string;
-      type: string;
-    };
+    // NOTE: Strapi's /api/auth/local does NOT populate role by default.
+    // Always fetch role separately via /api/users/me?populate=role.
   };
 }
 
-interface StrapiRegisterResponse {
-  jwt: string;
-  refreshToken: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    role?: {
-      id: number;
-      name: string;
-      type: string;
-    };
-  };
+/** Fetch and validate the authenticated user's role from Strapi. */
+async function fetchRoleName(jwt: string): Promise<UserRole | null> {
+  if (!API_URL) return null;
+  try {
+    const res = await fetch(`${API_URL}/api/users/me?populate=role`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return parseRole(data.role?.name);
+  } catch {
+    return null;
+  }
 }
 
 interface ActionResult {
@@ -52,16 +53,11 @@ interface ActionResult {
 }
 
 function getLoginRedirectPath(
-  roleName: string | undefined,
+  role: UserRole | null,
   redirectPath?: string,
-) {
-  const role = roleName as UserRole | undefined;
+): string {
   if (!role) return "/dashboard/student";
-
-  if (redirectPath && isValidRedirectForRole(redirectPath, role)) {
-    return redirectPath;
-  }
-
+  if (redirectPath && isValidRedirectForRole(redirectPath, role)) return redirectPath;
   return getDefaultDashboardRoute(role);
 }
 
@@ -81,7 +77,7 @@ export const registerAction = async (
 
   try {
     // 2. Register via Strapi's built-in endpoint
-    const data = await apiClient<StrapiRegisterResponse>(
+    const data = await apiClient<StrapiAuthResponse>(
       "/api/auth/local/register",
       {
         method: "POST",
@@ -93,11 +89,14 @@ export const registerAction = async (
       },
     );
 
-    // 3. Store tokens in httpOnly cookies
+    // 3. Fetch real role (Strapi register endpoint doesn't populate role)
+    const roleName = await fetchRoleName(data.jwt);
+
+    // 4. Store tokens + role in httpOnly cookies
     await Promise.all([
       setTokenInCookies("accessToken", data.jwt),
       setTokenInCookies("refreshToken", data.refreshToken),
-      setCookie("userRole", data.user.role?.name ?? "Student", 60 * 60 * 24),
+      ...(roleName ? [setCookie("userRole", roleName, 60 * 60 * 24)] : []),
     ]);
 
     return {
@@ -134,7 +133,7 @@ export const loginAction = async (
 
   try {
     // 2. Authenticate with Strapi
-    const data = await apiClient<StrapiLoginResponse>("/api/auth/local", {
+    const data = await apiClient<StrapiAuthResponse>("/api/auth/local", {
       method: "POST",
       body: {
         identifier: parsed.data.identifier,
@@ -142,8 +141,10 @@ export const loginAction = async (
       },
     });
 
-    // 3. Store tokens in httpOnly cookies
-    // 3. Store tokens in httpOnly cookies (30-day TTL when "remember me" is on)
+    // 3. Fetch real role — Strapi's login endpoint doesn't populate role
+    const roleName = await fetchRoleName(data.jwt);
+
+    // 4. Store tokens + role in httpOnly cookies
     const ttl = parsed.data.rememberMe
       ? 60 * 60 * 24 * 30 // 30 days
       : 60 * 60 * 24; // 1 day
@@ -151,13 +152,13 @@ export const loginAction = async (
     await Promise.all([
       setTokenInCookies("accessToken", data.jwt, ttl),
       setTokenInCookies("refreshToken", data.refreshToken, ttl),
-      setCookie("userRole", data.user.role?.name ?? "", ttl),
+      ...(roleName ? [setCookie("userRole", roleName, ttl)] : []),
     ]);
 
     return {
       success: true,
       message: "Login successful",
-      redirectPath: getLoginRedirectPath(data.user.role?.name, redirectPath),
+      redirectPath: getLoginRedirectPath(roleName, redirectPath),
     };
   } catch (error) {
     const message =
