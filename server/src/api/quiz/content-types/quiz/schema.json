@@ -39,6 +39,17 @@
       "component": "quiz.question",
       "repeatable": true,
       "required": true
+    },
+    "maxAttempts": {
+      "type": "integer",
+      "required": true,
+      "default": 3
+    },
+    "quiz_attempts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::quiz-attempt.quiz-attempt",
+      "mappedBy": "quiz"
     }
   }
 }

@@ -20,9 +20,10 @@
     },
     "quiz": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::quiz.quiz",
-      "required": true
+      "required": true,
+      "inversedBy": "quiz_attempts"
     },
     "answers": {
       "type": "json",
@@ -53,10 +54,9 @@
       "type": "datetime",
       "required": true
     },
-    "maxAttempts": {
+    "timeTaken": {
       "type": "integer",
-      "required": true,
-      "default": 3
+      "required": true
     }
   }
 }
