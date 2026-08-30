@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { requireStudentAuth } from "../_lib/auth";
-import { getMyEnrollments, buildProgressMap, strapiMediaUrl } from "../_lib/api";
+import {
+  getMyEnrollments,
+  buildProgressMap,
+  strapiMediaUrl,
+} from "../_lib/api";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import MyCoursesList from "./_components/MyCoursesList";
+import { requireAuth } from "../../_lib/auth";
 
 export const metadata: Metadata = {
   title: "My Courses",
@@ -20,7 +24,7 @@ export const metadata: Metadata = {
 export default async function MyCoursesPage() {
   let authData;
   try {
-    authData = await requireStudentAuth();
+    authData = await requireAuth(["Student"]);
   } catch {
     redirect("/auth/login");
   }
@@ -122,7 +126,10 @@ export default async function MyCoursesPage() {
             />
           </div>
         ) : (
-          <MyCoursesList enrollments={formattedEnrollments} progressMap={progressMap} />
+          <MyCoursesList
+            enrollments={formattedEnrollments}
+            progressMap={progressMap}
+          />
         )}
       </div>
     </div>

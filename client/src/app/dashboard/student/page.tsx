@@ -25,16 +25,16 @@ import {
   getAllMyLessonProgresses,
   getAllMyQuizAttempts,
 } from "./_lib/api";
-import { requireStudentAuth } from "./_lib/auth";
 import { OverviewCharts } from "./_components/OverviewCharts";
 import { Enrollment, LessonProgress, QuizAttempt } from "./_lib/types";
+import { requireAuth } from "../_lib/auth";
 
 export const metadata: Metadata = {
   title: "Student Dashboard",
 };
 
 export default async function StudentDashboardOverview() {
-  const { token, me } = await requireStudentAuth();
+  const { token, me } = await requireAuth(["Student"]);
 
   // Fetch stats dashboard data in parallel
   let enrollments: Enrollment[] = [];

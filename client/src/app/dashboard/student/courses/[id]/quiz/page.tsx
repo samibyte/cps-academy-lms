@@ -5,8 +5,13 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import QuizForm from "./_components/QuizForm";
-import { getCourseWithLessons, getLessonProgresses, getMyQuizAttempts, getQuizForCourse } from "../../../_lib/api";
-import { requireStudentAuth } from "../../../_lib/auth";
+import {
+  getCourseWithLessons,
+  getLessonProgresses,
+  getMyQuizAttempts,
+  getQuizForCourse,
+} from "../../../_lib/api";
+import { requireAuth } from "@/app/dashboard/_lib/auth";
 
 export const metadata: Metadata = {
   title: "Quiz",
@@ -18,7 +23,7 @@ interface QuizPageProps {
 
 export default async function QuizPage({ params }: QuizPageProps) {
   const { id: courseId } = await params;
-  const { token, me } = await requireStudentAuth();
+  const { token, me } = await requireAuth(["Student"]);
 
   const courseRes = await getCourseWithLessons(courseId, token);
   const course = courseRes.data;
@@ -55,31 +60,31 @@ export default async function QuizPage({ params }: QuizPageProps) {
       <div className="absolute top-0 right-0 w-72 h-72 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="mx-auto max-w-5xl xl:max-w-6xl w-full space-y-8">
-      {/* Back navigation */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-        nativeButton={false}
-        render={
-          <Link href={`/dashboard/student/courses/${courseId}`}>
-            <ChevronLeft className="size-3.5" />
-            কোর্সে ফিরে যাও
-          </Link>
-        }
-      />
+        {/* Back navigation */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          nativeButton={false}
+          render={
+            <Link href={`/dashboard/student/courses/${courseId}`}>
+              <ChevronLeft className="size-3.5" />
+              কোর্সে ফিরে যাও
+            </Link>
+          }
+        />
 
-      <PageHeader
-        title={`${course.title} — কুইজ.exe`}
-        description={quiz.description ?? quiz.title}
-      />
+        <PageHeader
+          title={`${course.title} — কুইজ.exe`}
+          description={quiz.description ?? quiz.title}
+        />
 
-      <QuizForm
-        courseId={courseId}
-        quiz={quiz}
-        studentDocId={me.documentId}
-        attempts={attempts}
-      />
+        <QuizForm
+          courseId={courseId}
+          quiz={quiz}
+          studentDocId={me.documentId}
+          attempts={attempts}
+        />
       </div>
     </div>
   );

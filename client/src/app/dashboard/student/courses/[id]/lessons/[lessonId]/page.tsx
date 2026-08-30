@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getCourseWithLessons, getLesson, getLessonProgresses, touchEnrollmentLastAccessed } from "../../../../_lib/api";
-import { requireStudentAuth } from "../../../../_lib/auth";
+import {
+  getCourseWithLessons,
+  getLesson,
+  getLessonProgresses,
+  touchEnrollmentLastAccessed,
+} from "../../../../_lib/api";
 import LessonClientView from "./_components/LessonClientView";
+import { requireAuth } from "@/app/dashboard/_lib/auth";
 
 export const metadata: Metadata = {
   title: "Lesson",
@@ -14,7 +19,7 @@ interface LessonPageProps {
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { id: courseId, lessonId } = await params;
-  const { token, me } = await requireStudentAuth();
+  const { token, me } = await requireAuth(["Student"]);
 
   // Update lastAccessedAt in background (non-blocking)
   touchEnrollmentLastAccessed(courseId, me.documentId, token).catch(() => {});
@@ -60,7 +65,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
     }
   }
 
-  const prevLessonDocId = currentIdx > 0 ? lessons[currentIdx - 1].documentId : null;
+  const prevLessonDocId =
+    currentIdx > 0 ? lessons[currentIdx - 1].documentId : null;
   const nextLessonDocId =
     currentIdx < lessons.length - 1 ? lessons[currentIdx + 1].documentId : null;
 

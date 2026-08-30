@@ -23,7 +23,7 @@ import {
   getQuizForCourse,
   touchEnrollmentLastAccessed,
 } from "../../_lib/api";
-import { requireStudentAuth } from "../../_lib/auth";
+import { requireAuth } from "@/app/dashboard/_lib/auth";
 
 export const metadata: Metadata = {
   title: "Course",
@@ -37,7 +37,7 @@ export default async function CourseDetailPage({
   params,
 }: CourseDetailPageProps) {
   const { id } = await params;
-  const { token, me } = await requireStudentAuth();
+  const { token, me } = await requireAuth(["Student"]);
 
   // Update lastAccessedAt in background (non-blocking)
   touchEnrollmentLastAccessed(id, me.documentId, token).catch(() => {});
@@ -161,7 +161,7 @@ export default async function CourseDetailPage({
                         {lesson.duration && (
                           <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono mt-0.5">
                             <Clock className="size-2.5" />
-                            {lesson.duration} মিনিট
+                            {lesson.duration / 60} মিনিট
                           </span>
                         )}
                       </div>
