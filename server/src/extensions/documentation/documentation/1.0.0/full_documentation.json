@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-08-29T19:17:54.209Z"
+    "x-generation-date": "2026-08-30T03:19:04.684Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -7515,6 +7515,9 @@
                         "isFree": {
                           "type": "boolean"
                         },
+                        "isFeatured": {
+                          "type": "boolean"
+                        },
                         "createdAt": {
                           "type": "string",
                           "format": "date-time"
@@ -8455,7 +8458,8 @@
               "shortDescription",
               "instructor",
               "level",
-              "isFree"
+              "isFree",
+              "isFeatured"
             ],
             "type": "object",
             "properties": {
@@ -8562,6 +8566,9 @@
               "isFree": {
                 "type": "boolean"
               },
+              "isFeatured": {
+                "type": "boolean"
+              },
               "locale": {
                 "type": "string"
               },
@@ -8626,7 +8633,8 @@
           "shortDescription",
           "instructor",
           "level",
-          "isFree"
+          "isFree",
+          "isFeatured"
         ],
         "properties": {
           "id": {
@@ -10824,6 +10832,9 @@
                               "isFree": {
                                 "type": "boolean"
                               },
+                              "isFeatured": {
+                                "type": "boolean"
+                              },
                               "createdAt": {
                                 "type": "string",
                                 "format": "date-time"
@@ -11795,6 +11806,9 @@
             "type": "integer"
           },
           "isFree": {
+            "type": "boolean"
+          },
+          "isFeatured": {
             "type": "boolean"
           },
           "createdAt": {
@@ -14107,6 +14121,9 @@
                           "type": "integer"
                         },
                         "isFree": {
+                          "type": "boolean"
+                        },
+                        "isFeatured": {
                           "type": "boolean"
                         },
                         "createdAt": {
@@ -17954,6 +17971,9 @@
               "isFree": {
                 "type": "boolean"
               },
+              "isFeatured": {
+                "type": "boolean"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -20369,6 +20389,9 @@
                           "type": "integer"
                         },
                         "isFree": {
+                          "type": "boolean"
+                        },
+                        "isFeatured": {
                           "type": "boolean"
                         },
                         "createdAt": {
@@ -24228,6 +24251,9 @@
               "isFree": {
                 "type": "boolean"
               },
+              "isFeatured": {
+                "type": "boolean"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -26671,6 +26697,9 @@
                           "type": "integer"
                         },
                         "isFree": {
+                          "type": "boolean"
+                        },
+                        "isFeatured": {
                           "type": "boolean"
                         },
                         "createdAt": {

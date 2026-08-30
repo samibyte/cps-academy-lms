@@ -77,7 +77,7 @@ export default async function MyCoursesPage() {
         </div>
 
         <PageHeader
-          title="আমার কোর্সসমূহ.h"
+          title="আমার কোর্সসমূহ"
           description="তুমি যে সব কোর্সে এনরোল করেছ, সেগুলোর প্রগ্রেস ট্র্যাক করো।"
         />
 
