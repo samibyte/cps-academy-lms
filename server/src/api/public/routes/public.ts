@@ -18,5 +18,14 @@ export default {
         middlewares: [],
       },
     },
+    {
+      method: "GET",
+      path: "/public/courses",
+      handler: "public.courses",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

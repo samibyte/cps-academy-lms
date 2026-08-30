@@ -11,6 +11,7 @@ interface PublicStatsResponse {
 type PublicController = {
   stats: (ctx: any) => Promise<void>;
   featuredCourses: (ctx: any) => Promise<void>;
+  courses: (ctx: any) => Promise<void>;
 };
 
 export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
@@ -73,6 +74,42 @@ export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
       ctx.body = {
         error: {
           message: "Unable to load featured courses.",
+        },
+      };
+    }
+  },
+
+  async courses(ctx: any): Promise<void> {
+    try {
+      const { search, level, page, pageSize } = ctx.query;
+
+      const filters: any = {};
+      if (level) {
+        filters.level = { $eq: level };
+      }
+      if (search) {
+        filters.$or = [
+          { title: { $containsi: search } },
+          { shortDescription: { $containsi: search } },
+        ];
+      }
+
+      const response = await (strapi.documents("api::course.course") as any).findPage({
+        filters,
+        populate: ["thumbnail", "instructor", "lessons"],
+        sort: [{ createdAt: "desc" }],
+        page: Number(page) || 1,
+        pageSize: Number(pageSize) || 8,
+      });
+
+      ctx.body = response;
+    } catch (error) {
+      strapi.log.error("public courses endpoint failed");
+      strapi.log.error(error);
+      ctx.status = 500;
+      ctx.body = {
+        error: {
+          message: "Unable to load courses.",
         },
       };
     }

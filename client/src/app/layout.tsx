@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import QueryProviders from "@/providers/queryClient";
+import MotionProvider from "@/providers/motion";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import ForbiddenToast from "@/components/ForbiddenToast";
@@ -46,11 +47,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <QueryProviders>
-          <TooltipProvider>
-            {children}
-            <Toaster richColors position="top-right" />
-            <ForbiddenToast />
-          </TooltipProvider>
+          <MotionProvider>
+            <TooltipProvider>
+              {children}
+              <Toaster richColors position="top-right" />
+              <ForbiddenToast />
+            </TooltipProvider>
+          </MotionProvider>
         </QueryProviders>
       </body>
     </html>
