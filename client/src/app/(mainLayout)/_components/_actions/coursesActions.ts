@@ -173,3 +173,17 @@ export async function enrollCourseAction(courseDocId: string) {
   }
 }
 
+export async function getPublicCourseBySlug(slug: string) {
+  try {
+    const res = await apiClient<{ data: StrapiCourse }>("/api/public/courses/" + encodeURIComponent(slug));
+    if (res.data) {
+      return mapCourse(res.data, 0);
+    }
+    return null;
+  } catch (err) {
+    console.error("[courses] getPublicCourseBySlug failed", err);
+    return null;
+  }
+}
+
+

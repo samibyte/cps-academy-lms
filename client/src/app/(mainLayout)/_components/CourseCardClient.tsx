@@ -121,38 +121,40 @@ export function CourseCardClient({ course }: { course: FeaturedCourse }) {
   return (
     <>
       <Card className="group/cp-course flex h-full flex-col transition-all border border-border/30 hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-md bg-card/20 backdrop-blur-md">
-        <CardHeader className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-mono text-xs text-muted-foreground">{course.code}</span>
-            <Badge
-              variant="outline"
-              className={cn("font-mono text-[10px] tracking-wider", level.className)}
-            >
-              {level.label}
-            </Badge>
-          </div>
-          <CardTitle className="text-lg font-bold line-clamp-1">{course.title}</CardTitle>
-        </CardHeader>
+        <Link href={`/courses/${course.slug}`} className="flex flex-col flex-1 min-h-0">
+          <CardHeader className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-mono text-xs text-muted-foreground">{course.code}</span>
+              <Badge
+                variant="outline"
+                className={cn("font-mono text-[10px] tracking-wider", level.className)}
+              >
+                {level.label}
+              </Badge>
+            </div>
+            <CardTitle className="text-lg font-bold line-clamp-1">{course.title}</CardTitle>
+          </CardHeader>
 
-        <CardContent className="flex flex-1 flex-col gap-3">
-          <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">{course.description}</p>
-          <div className="mt-auto flex flex-wrap gap-1.5">
-            {course.tags.length > 0 ? (
-              course.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md border border-border/40 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80 bg-muted/10"
-                >
-                  {tag}
+          <CardContent className="flex flex-1 flex-col gap-3">
+            <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">{course.description}</p>
+            <div className="mt-auto flex flex-wrap gap-1.5">
+              {course.tags.length > 0 ? (
+                course.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border border-border/40 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80 bg-muted/10"
+                  >
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/30">
+                  no_tags
                 </span>
-              ))
-            ) : (
-              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/30">
-                no_tags
-              </span>
-            )}
-          </div>
-        </CardContent>
+              )}
+            </div>
+          </CardContent>
+        </Link>
 
         <CardFooter className="flex flex-col gap-3 border-t border-border/20 pt-4 mt-2">
           {/* Public Course Meta Info */}
@@ -200,10 +202,14 @@ export function CourseCardClient({ course }: { course: FeaturedCourse }) {
                   size="sm"
                   variant="outline"
                   className="w-1/2 font-semibold h-8 text-xs hover:bg-muted/10 border-border/40"
-                  onClick={() => setDetailsOpen(true)}
-                >
-                  বিস্তারিত
-                </Button>
+                  nativeButton={false}
+                  render={
+                    <Link href={`/courses/${course.slug}`}>
+                      বিস্তারিত
+                    </Link>
+                  }
+                />
+
                 <Button
                   size="sm"
                   className="w-1/2 font-semibold h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
