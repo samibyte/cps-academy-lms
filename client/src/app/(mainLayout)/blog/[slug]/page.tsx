@@ -39,6 +39,10 @@ async function getBlogPostBySlug(slug: string) {
       "&populate[author][fields][0]=username" +
       "&populate[author][fields][1]=fullName" +
       "&pagination[pageSize]=1",
+    {
+      cache: "force-cache",
+      next: { revalidate: 60 },
+    },
   );
 
   const items = Array.isArray(res.data) ? res.data : [];

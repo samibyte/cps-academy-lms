@@ -47,6 +47,10 @@ async function getBlogPosts() {
       "&sort[0]=publishedAt:desc" +
       "&sort[1]=createdAt:desc" +
       "&pagination[pageSize]=12",
+    {
+      cache: "force-cache",
+      next: { revalidate: 60 },
+    },
   );
 
   return Array.isArray(res.data) ? res.data : [];
@@ -112,7 +116,9 @@ export default async function BlogPage() {
                       <Image
                         src={imageUrl}
                         alt={post.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                   ) : (

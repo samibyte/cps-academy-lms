@@ -36,6 +36,7 @@ const Navbar = async () => {
   return (
     <header className="bg-background sticky top-0 z-50">
       <div className="mx-auto flex max-w-7xl items-center justify-between  px-4 py-7 sm:px-6">
+        <div className="w-35"></div>
         <div className="text-muted-foreground flex flex-1 items-center gap-8 font-medium md:justify-center lg:gap-16">
           <Link href={"/"} className="hover:text-primary max-md:hidden">
             হোম

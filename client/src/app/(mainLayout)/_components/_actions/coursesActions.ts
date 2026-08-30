@@ -17,6 +17,10 @@ export async function getFeaturedCourses(): Promise<FeaturedCourse[]> {
   try {
     const res = await apiClient<FeaturedCoursesResponse>(
       "/api/public/featured-courses",
+      {
+        cache: "force-cache",
+        next: { revalidate: 60 },
+      },
     );
     const data = Array.isArray(res.data) ? res.data : [];
     if (data.length > 0) {
@@ -63,7 +67,10 @@ export async function getPagedCourses(
           total: number;
         };
       };
-    }>(`/api/public/courses${queryString}`);
+    }>(`/api/public/courses${queryString}`, {
+      cache: "force-cache",
+      next: { revalidate: 60 },
+    });
 
     const data = Array.isArray(res.data) ? res.data : [];
     const mapped = data.map((course, idx) => {
@@ -175,7 +182,13 @@ export async function enrollCourseAction(courseDocId: string) {
 
 export async function getPublicCourseBySlug(slug: string) {
   try {
-    const res = await apiClient<{ data: StrapiCourse }>("/api/public/courses/" + encodeURIComponent(slug));
+    const res = await apiClient<{ data: StrapiCourse }>(
+      "/api/public/courses/" + encodeURIComponent(slug),
+      {
+        cache: "force-cache",
+        next: { revalidate: 60 },
+      },
+    );
     if (res.data) {
       return mapCourse(res.data, 0);
     }

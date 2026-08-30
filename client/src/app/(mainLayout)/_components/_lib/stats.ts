@@ -12,7 +12,10 @@ interface PublicStatsResponse {
 
 export async function getPublicStats(): Promise<PublicStats | null> {
   try {
-    const res = await apiClient<PublicStatsResponse>("/api/public/stats");
+    const res = await apiClient<PublicStatsResponse>("/api/public/stats", {
+      cache: "force-cache",
+      next: { revalidate: 60 },
+    });
     return res.data;
   } catch (err) {
     console.error("[stats] Failed to fetch public stats", err);

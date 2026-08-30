@@ -18,12 +18,18 @@ const TOKEN_REFRESH_WINDOW_SECONDS = Number(
 );
 
 /** TTL for the refresh-token cookie (30 days). */
-const REFRESH_TOKEN_MAX_AGE = Number(process.env.REFRESH_TOKEN_MAX_AGE);
+const REFRESH_TOKEN_MAX_AGE = Number.isFinite(
+  Number(process.env.REFRESH_TOKEN_MAX_AGE),
+)
+  ? Number(process.env.REFRESH_TOKEN_MAX_AGE)
+  : 60 * 60 * 24 * 30;
 
 /** Fallback TTL for the access-token cookie when `exp` is unreadable. */
-const ACCESS_TOKEN_FALLBACK_MAX_AGE = Number(
-  process.env.ACCESS_TOKEN_FALLBACK_MAX_AGE,
-);
+const ACCESS_TOKEN_FALLBACK_MAX_AGE = Number.isFinite(
+  Number(process.env.ACCESS_TOKEN_FALLBACK_MAX_AGE),
+)
+  ? Number(process.env.ACCESS_TOKEN_FALLBACK_MAX_AGE)
+  : 60 * 60;
 
 // Types
 
@@ -345,16 +351,18 @@ export async function proxy(request: NextRequest) {
     return handleProtectedRoute(request, accessToken, refreshToken);
   }
 
-  // Redirect already-authenticated users away from auth pages.
-  // windowSeconds=0 → strict expiry check, no preemptive refresh buffer.
-  if (
-    isAuthRoute(pathname) &&
-    accessToken &&
-    !needsTokenRefresh(accessToken, 0)
-  ) {
+  // Redirect already-authenticated users away from auth pages ONLY when the
+  // session is confirmed healthy. If role resolution fails (e.g. the backend
+  // is momentarily unreachable or cold-starting), fall through and let the
+  // login page render. Redirecting to /dashboard unconditionally here creates
+  // a redirect loop: dashboard layouts re-redirect to /auth/login when their
+  // /api/users/me call fails, bouncing back to /dashboard forever.
+  if (isAuthRoute(pathname) && accessToken) {
     const role = await getUserRole(request, accessToken);
-    const dest = role ? getDefaultDashboardRoute(role) : "/dashboard";
-    return NextResponse.redirect(new URL(dest, request.url));
+    if (role) {
+      const dest = getDefaultDashboardRoute(role);
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
   }
 
   return NextResponse.next();
