@@ -49,7 +49,7 @@ interface PolicyContext {
 
 interface DocumentsService {
   findOne<T>(options: { documentId: string; populate?: string[] }): Promise<T | null>;
-  findMany<T>(options: { filters: Record<string, unknown>; fields?: string[] }): Promise<T[]>;
+  findMany<T>(options: { filters: Record<string, unknown>; fields?: string[]; limit?: number }): Promise<T[]>;
 }
 
 interface Strapi {
@@ -65,15 +65,30 @@ export default async (
   strapi.log.info('In can-attempt-quiz policy.');
 
   const user = policyContext.state.user;
-  if (!user || user.documentId === undefined) {
+  if (!user) {
     strapi.log.warn('can-attempt-quiz: unauthenticated request.');
     return false;
+  }
+
+  if (user.documentId === undefined) {
+    const userRecord = await strapi
+      .documents('plugin::users-permissions.user')
+      .findMany<any>({
+        filters: { id: user.id },
+        limit: 1,
+      });
+    if (userRecord?.[0]?.documentId) {
+      user.documentId = userRecord[0].documentId;
+    } else {
+      strapi.log.warn('can-attempt-quiz: user has no document ID.');
+      return false;
+    }
   }
 
   // ── Resolve role
   const userWithRole = await strapi
     .documents('plugin::users-permissions.user')
-    .findOne<UserWithRole>({ documentId: user.documentId, populate: ['role'] });
+    .findOne<UserWithRole>({ documentId: user.documentId!, populate: ['role'] });
 
   if (!userWithRole?.role) return false;
   const roleName = userWithRole.role.name;

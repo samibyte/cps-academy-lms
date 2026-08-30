@@ -44,6 +44,7 @@ interface DocumentsService {
   }): Promise<T | null>;
   findMany<T>(options: {
     filters: any;
+    limit?: number;
   }): Promise<T[]>;
 }
 
@@ -66,13 +67,23 @@ export default async (
   }
 
   if (user.documentId === undefined) {
-    return false;
+    const userRecord = await strapi
+      .documents('plugin::users-permissions.user')
+      .findMany<any>({
+        filters: { id: user.id },
+        limit: 1,
+      });
+    if (userRecord?.[0]?.documentId) {
+      user.documentId = userRecord[0].documentId;
+    } else {
+      return false;
+    }
   }
 
   const userWithRole = await strapi
     .documents('plugin::users-permissions.user')
     .findOne<UserWithRole>({
-      documentId: user.documentId,
+      documentId: user.documentId!,
       populate: ['role'],
     });
 
