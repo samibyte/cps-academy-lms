@@ -6,6 +6,7 @@ import {
   deleteCourse,
   deleteBlogPost,
   createBlogPost,
+  updateBlogPost,
   createQuiz,
   updateQuiz,
   createLesson,
@@ -143,6 +144,10 @@ export async function deleteBlogPostAction(id: string) {
   return deleteBlogPost(id, token);
 }
 
+export async function publishBlogPostAction(id: string, publish: boolean) {
+  const { token } = await requireAuth(["Admin", "Content Manager"]);
+  return updateBlogPost(id, { publishedAt: publish ? new Date().toISOString() : null }, token);
+}
 // QUIZZES
 
 export async function createQuizAction(values: Record<string, unknown>) {
