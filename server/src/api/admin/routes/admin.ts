@@ -27,5 +27,41 @@ export default {
         middlewares: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/admin/users',
+      handler: 'admin.users',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/admin/users/:documentId/role',
+      handler: 'admin.updateUserRole',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/admin/users/:documentId/block',
+      handler: 'admin.toggleBlockUser',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/admin/users/:documentId',
+      handler: 'admin.updateUser',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

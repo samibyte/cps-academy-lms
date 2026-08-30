@@ -10,7 +10,7 @@ export default factories.createCoreRouter('api::course.course', {
       policies: ['global::is-owner-or-admin'],
     },
     findOne: {
-      policies: ['global::is-owner-or-admin'],
+      policies: ['global::is-enrolled'],
     },
     update: {
       policies: ['global::is-owner-or-admin'],

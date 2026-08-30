@@ -34,7 +34,7 @@ interface PolicyParams {
 
 interface PolicyContext {
   state: PolicyState;
-  request: PolicyRequest;
+  request: PolicyRequest & { query?: Record<string, any> };
   params: PolicyParams;
 }
 
@@ -51,6 +51,7 @@ interface DocumentsService {
   }): Promise<T | null>;
   findMany<T>(options: {
     filters: any;
+    limit?: number;
   }): Promise<T[]>;
 }
 
@@ -77,15 +78,25 @@ export default async (
   }
 
   if (user.documentId === undefined) {
-    strapi.log.warn(`Access denied: User ${user.id} has no document ID.`);
-    return false;
+    const userRecord = await strapi
+      .documents('plugin::users-permissions.user')
+      .findMany<any>({
+        filters: { id: user.id },
+        limit: 1,
+      });
+    if (userRecord?.[0]?.documentId) {
+      user.documentId = userRecord[0].documentId;
+    } else {
+      strapi.log.warn(`Access denied: User ${user.id} has no document ID.`);
+      return false;
+    }
   }
 
   // Retrieve user with role populated
   const userWithRole = await strapi
     .documents('plugin::users-permissions.user')
     .findOne<UserWithRole>({
-      documentId: user.documentId,
+      documentId: user.documentId!,
       populate: ['role'],
     });
 
@@ -157,6 +168,45 @@ export default async (
       course.instructor.documentId === user.documentId
     );
   };
+
+  // Extracts the "raw" value out of a Strapi filter like { $eq: x } or { $in: [...] }
+  const unwrapFilter = (value: any): any => {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      if (value.$eq !== undefined) return value.$eq;
+      if (value.$in !== undefined) return value.$in;
+    }
+    return value;
+  };
+
+  // A single match value (or array of values) must reference the current user.
+  const matchesUserFilter = (value: any): boolean => {
+    const raw = unwrapFilter(value);
+    if (Array.isArray(raw)) {
+      return raw.some((item) => isUserMatchingInput(item));
+    }
+    return isUserMatchingInput(raw);
+  };
+
+  // In a Strapi `find` request, the student filter must be restricted to the
+  // authenticated user's own records (id or documentId form).
+  const hasSelfFilter = (filters: any): boolean => {
+    if (!filters || typeof filters !== 'object') return false;
+    const student = filters.student;
+    if (student === undefined || student === null) return false;
+
+    // The filter can be expressed as { documentId: { $eq } } | { id: { $eq } }
+    // or directly as a value / { $eq } / { $in }. Recurse into the keyed form.
+    if (typeof student === 'object' && !Array.isArray(student)) {
+      if (student.documentId !== undefined) {
+        return matchesUserFilter(student.documentId);
+      }
+      if (student.id !== undefined) {
+        return matchesUserFilter(student.id);
+      }
+    }
+    return matchesUserFilter(student);
+  };
+
 
   // --- Instructor Flow ---
   if (roleName === 'Instructor') {
@@ -294,7 +344,15 @@ export default async (
           record.student.documentId === user.documentId
         );
       }
-      return true;
+
+      // `find` (list) — restrict to the student's OWN records so a student can
+      // never read another student's progress / quiz attempts.
+      if (action === 'find') {
+        const filters = (policyContext.request.query as any)?.filters;
+        return hasSelfFilter(filters);
+      }
+
+      return false;
     }
 
     return false;
