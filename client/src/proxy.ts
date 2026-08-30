@@ -3,29 +3,12 @@ import {
   isAuthRoute,
   getDefaultDashboardRoute,
   getRouteOwner,
+  parseRole,
   type UserRole,
 } from "./lib/authUtils";
-
-//Constants
+import { getJwtExpiry, needsTokenRefresh } from "./lib/tokenUtils";
 
 const API_URL = process.env.API_URL;
-
-const VALID_ROLES = new Set<UserRole>([
-  "Admin",
-  "Instructor",
-  "Content Manager",
-  "Student",
-]);
-
-/** Cast a raw role string to UserRole if it is one of the known values. */
-function parseRole(raw: string | null | undefined): UserRole | null {
-  const trimmed = raw?.trim();
-  return VALID_ROLES.has(trimmed as UserRole) ? (trimmed as UserRole) : null;
-}
-
-const ACCESS_TOKEN_COOKIE = "accessToken";
-const REFRESH_TOKEN_COOKIE = "refreshToken";
-const USER_ROLE_COOKIE = "userRole";
 
 const PROTECTED_ROUTE_PREFIXES = ["/dashboard"];
 
@@ -53,39 +36,8 @@ interface RefreshResponse {
  * NOTE: Strapi 5 JWTs do NOT embed the user's role.
  * The `role` must always be fetched from `/api/users/me?populate=role`.
  */
-interface JwtPayload {
-  exp?: number;
-}
 
-//JWT Helpers
-
-function decodeJwtPayload(token: string): JwtPayload | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const payload = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(payload) as JwtPayload;
-  } catch {
-    return null;
-  }
-}
-
-function getJwtExpiry(token: string): number | null {
-  const payload = decodeJwtPayload(token);
-  return typeof payload?.exp === "number" ? payload.exp : null;
-}
-
-/**
- * Returns true if the token is expired or will expire within `windowSeconds`.
- * Pass `0` for a strict expiry check (no refresh buffer).
- */
-function needsTokenRefresh(
-  token: string,
-  windowSeconds = TOKEN_REFRESH_WINDOW_SECONDS,
-): boolean {
-  const exp = getJwtExpiry(token);
-  return !exp || exp <= Math.floor(Date.now() / 1000) + windowSeconds;
-}
+// JWT Helpers are shared in src/lib/tokenUtils.ts.
 
 //Route Helpers
 
@@ -97,7 +49,6 @@ function isProtectedRoute(pathname: string): boolean {
 
 /**
  * Returns true if `role` is authorised to access `pathname`.
- * Admin always passes; other roles must match the route's designated owner.
  */
 function isRoleAllowed(pathname: string, role: UserRole | null): boolean {
   const routeOwner = getRouteOwner(pathname);
@@ -105,7 +56,7 @@ function isRoleAllowed(pathname: string, role: UserRole | null): boolean {
   if (!routeOwner) return true;
   if (!role) return false;
 
-  return role === "Admin" || role === routeOwner;
+  return role === routeOwner;
 }
 
 function getSafeRedirectPath(request: NextRequest): string {
@@ -156,11 +107,11 @@ function setAuthCookies(
 ): void {
   const accessMaxAge = getAccessTokenMaxAge(jwt);
 
-  response.cookies.set(ACCESS_TOKEN_COOKIE, jwt, {
+  response.cookies.set("accessToken", jwt, {
     ...BASE_COOKIE_OPTIONS,
     maxAge: accessMaxAge,
   });
-  response.cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+  response.cookies.set("refreshToken", refreshToken, {
     ...BASE_COOKIE_OPTIONS,
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
@@ -168,7 +119,7 @@ function setAuthCookies(
   if (role) {
     // userRole must not outlive the access token — role changes take effect
     // on the next refresh, not after the 30-day refresh-token window.
-    response.cookies.set(USER_ROLE_COOKIE, role, {
+    response.cookies.set("userRole", role, {
       ...BASE_COOKIE_OPTIONS,
       maxAge: accessMaxAge,
     });
@@ -177,9 +128,9 @@ function setAuthCookies(
 
 /** Delete all auth cookies (used on refresh failure). */
 function clearAuthCookies(response: NextResponse): void {
-  response.cookies.delete(ACCESS_TOKEN_COOKIE);
-  response.cookies.delete(REFRESH_TOKEN_COOKIE);
-  response.cookies.delete(USER_ROLE_COOKIE);
+  response.cookies.delete("accessToken");
+  response.cookies.delete("refreshToken");
+  response.cookies.delete("userRole");
 }
 
 /**
@@ -192,8 +143,8 @@ function cacheRoleCookie(
   role: UserRole,
   accessToken: string,
 ): void {
-  if (request.cookies.get(USER_ROLE_COOKIE)?.value) return;
-  response.cookies.set(USER_ROLE_COOKIE, role, {
+  if (request.cookies.get("userRole")?.value) return;
+  response.cookies.set("userRole", role, {
     ...BASE_COOKIE_OPTIONS,
     maxAge: getAccessTokenMaxAge(accessToken),
   });
@@ -251,20 +202,16 @@ function buildRefreshedHeaders(
 ): Headers {
   const headers = new Headers(request.headers);
 
-  const AUTH_COOKIES = new Set([
-    ACCESS_TOKEN_COOKIE,
-    REFRESH_TOKEN_COOKIE,
-    USER_ROLE_COOKIE,
-  ]);
+  const AUTH_COOKIES = new Set(["accessToken", "refreshToken", "userRole"]);
 
   const cookieParts = request.cookies
     .getAll()
     .filter((c) => !AUTH_COOKIES.has(c.name))
     .map((c) => `${c.name}=${c.value}`);
 
-  cookieParts.push(`${ACCESS_TOKEN_COOKIE}=${refreshed.jwt}`);
-  cookieParts.push(`${REFRESH_TOKEN_COOKIE}=${refreshed.refreshToken}`);
-  if (role) cookieParts.push(`${USER_ROLE_COOKIE}=${role}`);
+  cookieParts.push(`${"accessToken"}=${refreshed.jwt}`);
+  cookieParts.push(`${"refreshToken"}=${refreshed.refreshToken}`);
+  if (role) cookieParts.push(`${"userRole"}=${role}`);
 
   headers.set("cookie", cookieParts.join("; "));
   return headers;
@@ -276,7 +223,7 @@ async function getUserRole(
   request: NextRequest,
   token: string,
 ): Promise<UserRole | null> {
-  const cached = parseRole(request.cookies.get(USER_ROLE_COOKIE)?.value);
+  const cached = parseRole(request.cookies.get("userRole")?.value);
   if (cached) return cached;
 
   if (!API_URL) return null;
@@ -314,7 +261,10 @@ async function handleProtectedRoute(
   const { pathname } = request.nextUrl;
 
   // ── Path 1: Valid, non-expiring access token
-  if (accessToken && !needsTokenRefresh(accessToken)) {
+  if (
+    accessToken &&
+    !needsTokenRefresh(accessToken, TOKEN_REFRESH_WINDOW_SECONDS)
+  ) {
     const role = await getUserRole(request, accessToken);
 
     if (isDashboardRoot(pathname)) {
@@ -346,6 +296,7 @@ async function handleProtectedRoute(
     }
 
     const role = await getUserRole(request, refreshed.jwt);
+    console.log(role);
 
     if (isDashboardRoot(pathname)) {
       const dest = role ? getDefaultDashboardRoute(role) : null;
@@ -387,8 +338,8 @@ async function handleProtectedRoute(
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
-  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
 
   if (isProtectedRoute(pathname)) {
     return handleProtectedRoute(request, accessToken, refreshToken);
