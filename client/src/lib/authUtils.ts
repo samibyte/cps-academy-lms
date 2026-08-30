@@ -1,15 +1,17 @@
 export type UserRole = "Admin" | "Instructor" | "Content Manager" | "Student";
 
-const VALID_ROLES = new Set<UserRole>(["Admin", "Instructor", "Content Manager", "Student"]);
+export const VALID_ROLES = new Set<UserRole>([
+  "Admin",
+  "Instructor",
+  "Content Manager",
+  "Student",
+]);
 
 /** Returns the value typed as UserRole if it is a known role, otherwise null. */
 export const parseRole = (role?: string | null): UserRole | null => {
   const trimmed = role?.trim();
   return VALID_ROLES.has(trimmed as UserRole) ? (trimmed as UserRole) : null;
 };
-
-/** @deprecated Use parseRole instead. */
-export const normalizeRoleName = parseRole;
 
 export const authRoutes = ["/auth/login", "/auth/register"];
 
@@ -71,11 +73,16 @@ export const getRouteOwner = (pathname: string): UserRole | null => {
 
 export const getDefaultDashboardRoute = (role: UserRole | string): string => {
   switch (role as UserRole) {
-    case "Admin":           return "/dashboard/admin";
-    case "Instructor":      return "/dashboard/instructor";
-    case "Content Manager": return "/dashboard/content-manager";
-    case "Student":         return "/dashboard/student";
-    default:                return "/";
+    case "Admin":
+      return "/dashboard/admin";
+    case "Instructor":
+      return "/dashboard/instructor";
+    case "Content Manager":
+      return "/dashboard/content-manager";
+    case "Student":
+      return "/dashboard/student";
+    default:
+      return "/";
   }
 };
 

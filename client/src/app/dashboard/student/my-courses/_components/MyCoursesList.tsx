@@ -3,9 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import {
   BookOpenIcon,
@@ -16,7 +20,6 @@ import {
   CheckCircle2,
   RefreshCw,
 } from "lucide-react";
-
 
 interface MyCoursesListProps {
   enrollments: Array<{
@@ -59,8 +62,13 @@ const LEVEL_CONFIG: Record<
   },
 };
 
-export default function MyCoursesList({ enrollments, progressMap }: MyCoursesListProps) {
-  const [filter, setFilter] = React.useState<"all" | "active" | "completed">("all");
+export default function MyCoursesList({
+  enrollments,
+  progressMap,
+}: MyCoursesListProps) {
+  const [filter, setFilter] = React.useState<"all" | "active" | "completed">(
+    "all",
+  );
 
   const filteredEnrollments = React.useMemo(() => {
     return enrollments.filter((e) => {
@@ -91,7 +99,12 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          ./in_progress ({enrollments.filter((e) => e.enrollment_status !== "completed").length})
+          ./in_progress (
+          {
+            enrollments.filter((e) => e.enrollment_status !== "completed")
+              .length
+          }
+          )
         </button>
         <button
           onClick={() => setFilter("completed")}
@@ -101,7 +114,12 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          ./completed ({enrollments.filter((e) => e.enrollment_status === "completed").length})
+          ./completed (
+          {
+            enrollments.filter((e) => e.enrollment_status === "completed")
+              .length
+          }
+          )
         </button>
       </div>
 
@@ -132,7 +150,9 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
             };
             const isCompleted = enrollment.enrollment_status === "completed";
             const progressPct =
-              totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+              totalLessons > 0
+                ? Math.round((completedLessons / totalLessons) * 100)
+                : 0;
 
             return (
               <Card
@@ -209,7 +229,11 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
                     <span>
                       {completedLessons}/{totalLessons} লেসন
                     </span>
-                    <span className={isCompleted ? "text-emerald-500 font-semibold" : ""}>
+                    <span
+                      className={
+                        isCompleted ? "text-emerald-500 font-semibold" : ""
+                      }
+                    >
                       {progressPct}% সম্পন্ন
                     </span>
                   </div>
@@ -248,7 +272,9 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
                       variant="outline"
                       nativeButton={false}
                       render={
-                        <Link href={`/dashboard/student/courses/${course.documentId}`}>
+                        <Link
+                          href={`/dashboard/student/courses/${course.documentId}`}
+                        >
                           <RefreshCw className="h-3.5 w-3.5" />
                           পুনরায় দেখো (Rewatch)
                         </Link>
@@ -259,7 +285,9 @@ export default function MyCoursesList({ enrollments, progressMap }: MyCoursesLis
                       className="w-full gap-2 text-sm font-semibold"
                       nativeButton={false}
                       render={
-                        <Link href={`/dashboard/student/courses/${course.documentId}`}>
+                        <Link
+                          href={`/dashboard/student/courses/${course.documentId}`}
+                        >
                           ক্লাস চালিয়ে যাও
                           <ArrowRightIcon className="h-3.5 w-3.5" />
                         </Link>

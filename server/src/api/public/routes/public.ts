@@ -27,5 +27,15 @@ export default {
         middlewares: [],
       },
     },
+    {
+      method: "GET",
+      path: "/public/courses/:slug",
+      handler: "public.courseBySlug",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };
+

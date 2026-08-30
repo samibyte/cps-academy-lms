@@ -85,12 +85,14 @@ export default function QuizForm({
     maxAttempts,
   );
   // Trials remaining is only meaningful BEFORE the student has passed.
-  const trialsLeft = hasPassedOnce ? Infinity : Math.max(0, maxAttempts - trialsUsed);
+  const trialsLeft = hasPassedOnce
+    ? Infinity
+    : Math.max(0, maxAttempts - trialsUsed);
   const sortedQuestions = [...(quiz.questions ?? [])].sort(
     (a, b) => a.order - b.order,
   );
 
-  /* ── Form state ───────────────────────────────────────────────────────────*/
+  /* Form state */
   const [answers, setAnswers] = React.useState<Record<number, string>>({});
   const [isPending, setIsPending] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -108,14 +110,29 @@ export default function QuizForm({
     }>;
   } | null>(null);
 
-  /*  Timer state 
+  /*  Timer state
    * Start timestamp is persisted in sessionStorage so a page refresh cannot
    * reset the clock.  We use refs for the auto-submit effect to avoid stale
    * closures without disabling the exhaustive-deps lint rule.
-*/
-  const [startedAt, setStartedAt] = React.useState<string>("");
-  const [secondsLeft, setSecondsLeft] = React.useState<number>(timeLimitSeconds);
-  const [timerExpired, setTimerExpired] = React.useState(false);
+   */
+  const [startedAt, setStartedAt] = React.useState<string>(() => {
+    if (typeof window === "undefined") return "";
+
+    const key = sessionKey(quiz.documentId);
+    const stored = sessionStorage.getItem(key);
+    const startIso = stored ?? new Date().toISOString();
+    if (!stored) sessionStorage.setItem(key, startIso);
+
+    return startIso;
+  });
+  const [secondsLeft, setSecondsLeft] = React.useState<number>(() => {
+    if (!startedAt) return timeLimitSeconds;
+
+    const elapsed = Math.floor(
+      (Date.now() - new Date(startedAt).getTime()) / 1000,
+    );
+    return Math.max(0, timeLimitSeconds - elapsed);
+  });
   const submitCalledRef = React.useRef(false);
 
   // Keep refs in sync so the auto-submit effect always sees fresh values
@@ -129,34 +146,14 @@ export default function QuizForm({
     startedAtRef.current = startedAt;
   }, [startedAt]);
 
-  // Initialise (or restore) the timer on mount — skip when blocked or already done
-  React.useEffect(() => {
-    if (isBlocked || result) return;
-
-    const key = sessionKey(quiz.documentId);
-    const stored = sessionStorage.getItem(key);
-
-    const startIso = stored ?? new Date().toISOString();
-    if (!stored) sessionStorage.setItem(key, startIso);
-    setStartedAt(startIso);
-
-    const elapsed = Math.floor((Date.now() - new Date(startIso).getTime()) / 1000);
-    const remaining = Math.max(0, timeLimitSeconds - elapsed);
-    setSecondsLeft(remaining);
-
-    if (remaining <= 0) setTimerExpired(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run once on mount
-  }, []);
-
   // Countdown tick
   React.useEffect(() => {
-    if (isBlocked || result || timerExpired || !startedAt) return;
+    if (isBlocked || result || !startedAt || secondsLeft <= 0) return;
 
     const interval = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          setTimerExpired(true);
           return 0;
         }
         return prev - 1;
@@ -164,15 +161,21 @@ export default function QuizForm({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isBlocked, startedAt, result, timerExpired]);
+  }, [isBlocked, startedAt, result, secondsLeft]);
 
-  // Auto-submit when timer expires — uses refs to avoid stale closures
+  const timerExpired = secondsLeft <= 0;
+
   React.useEffect(() => {
-    if (!timerExpired || result || submitCalledRef.current || !startedAtRef.current) return;
+    if (
+      !timerExpired ||
+      result ||
+      submitCalledRef.current ||
+      !startedAtRef.current
+    )
+      return;
     submitCalledRef.current = true;
     doSubmit(answersRef.current, startedAtRef.current);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- refs are always current; timerExpired is the only real trigger
-  }, [timerExpired]);
+  }, [doSubmit, result, timerExpired]);
 
   /* ── Handlers */
   const handleOptionChange = (questionId: number, optionKey: string) => {
@@ -242,7 +245,8 @@ export default function QuizForm({
   /*Derived display values */
   const isTimerRed = secondsLeft <= 60 && !result;
   const timerDisplay = formatTime(secondsLeft);
-  const timerPct = timeLimitSeconds > 0 ? (secondsLeft / timeLimitSeconds) * 100 : 0;
+  const timerPct =
+    timeLimitSeconds > 0 ? (secondsLeft / timeLimitSeconds) * 100 : 0;
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -270,7 +274,9 @@ export default function QuizForm({
                     ? "সবুজ বাতি পেয়েছ (AC)!"
                     : "লাল বাতি (WA) — আবার চেষ্টা করো"}
                 </h2>
-                <p className="text-sm text-muted-foreground">{result.message}</p>
+                <p className="text-sm text-muted-foreground">
+                  {result.message}
+                </p>
               </div>
 
               {/* Score summary */}
@@ -279,13 +285,17 @@ export default function QuizForm({
                   <span className="block text-3xl font-bold font-mono">
                     {result.score}/{result.totalPoints}
                   </span>
-                  <span className="text-xs text-muted-foreground">প্রাপ্ত নম্বর</span>
+                  <span className="text-xs text-muted-foreground">
+                    প্রাপ্ত নম্বর
+                  </span>
                 </div>
                 <div className="space-y-1 text-center">
                   <span className="block text-3xl font-bold font-mono">
                     {result.percentage}%
                   </span>
-                  <span className="text-xs text-muted-foreground">শতকরা হার</span>
+                  <span className="text-xs text-muted-foreground">
+                    শতকরা হার
+                  </span>
                 </div>
                 <div className="space-y-1 text-center">
                   <span
@@ -382,7 +392,9 @@ export default function QuizForm({
                           <span className="text-[10px] font-mono font-bold text-muted-foreground w-4 shrink-0">
                             {o.key}.
                           </span>
-                          <span className="text-sm text-foreground">{o.value}</span>
+                          <span className="text-sm text-foreground">
+                            {o.value}
+                          </span>
                         </label>
                       ))}
                     </RadioGroup>
@@ -463,7 +475,9 @@ export default function QuizForm({
               <span className="flex items-center gap-1">
                 <Target className="size-3.5" /> পাসিং স্কোর
               </span>
-              <span className="font-semibold text-foreground">{quiz.passingScore}%</span>
+              <span className="font-semibold text-foreground">
+                {quiz.passingScore}%
+              </span>
             </div>
             <div className="flex items-center justify-between text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -541,7 +555,8 @@ export default function QuizForm({
                     </div>
                     <div className="font-mono text-muted-foreground space-y-0.5">
                       <div>
-                        স্কোর: {attempt.score}/{attempt.totalPoints} ({attempt.percentage}%)
+                        স্কোর: {attempt.score}/{attempt.totalPoints} (
+                        {attempt.percentage}%)
                       </div>
                       <div>
                         সময়: {Math.floor((attempt.timeTaken ?? 0) / 60)}m{" "}
@@ -549,7 +564,9 @@ export default function QuizForm({
                       </div>
                       <div>
                         তারিখ:{" "}
-                        {new Date(attempt.submittedAt).toLocaleDateString("bn-BD")}
+                        {new Date(attempt.submittedAt).toLocaleDateString(
+                          "bn-BD",
+                        )}
                       </div>
                     </div>
                   </div>
@@ -571,11 +588,14 @@ export default function QuizForm({
             <DialogDescription className="text-xs font-mono text-muted-foreground">
               {result && (
                 <>
-                  প্রাপ্ত নম্বর: {result.score}/{result.totalPoints} ({result.percentage}%) |{" "}
+                  প্রাপ্ত নম্বর: {result.score}/{result.totalPoints} (
+                  {result.percentage}%) |{" "}
                   {result.passed ? (
                     <span className="text-emerald-500 font-bold">পাস (AC)</span>
                   ) : (
-                    <span className="text-destructive font-bold">ফেইল (WA)</span>
+                    <span className="text-destructive font-bold">
+                      ফেইল (WA)
+                    </span>
                   )}
                 </>
               )}

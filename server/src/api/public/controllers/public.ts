@@ -12,6 +12,7 @@ type PublicController = {
   stats: (ctx: any) => Promise<void>;
   featuredCourses: (ctx: any) => Promise<void>;
   courses: (ctx: any) => Promise<void>;
+  courseBySlug: (ctx: any) => Promise<void>;
 };
 
 export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
@@ -94,15 +95,32 @@ export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
         ];
       }
 
-      const response = await (strapi.documents("api::course.course") as any).findPage({
-        filters,
-        populate: ["thumbnail", "instructor", "lessons"],
-        sort: [{ createdAt: "desc" }],
+      const pagination = {
         page: Number(page) || 1,
         pageSize: Number(pageSize) || 8,
-      });
+      };
 
-      ctx.body = response;
+      const [data, total] = await Promise.all([
+        strapi.documents("api::course.course").findMany({
+          filters,
+          populate: ["thumbnail", "instructor", "lessons"],
+          sort: [{ createdAt: "desc" }],
+          pagination,
+        }),
+        strapi.documents("api::course.course").count({ filters }),
+      ]);
+
+      ctx.body = {
+        data,
+        meta: {
+          pagination: {
+            page: pagination.page,
+            pageSize: pagination.pageSize,
+            pageCount: Math.ceil(total / pagination.pageSize),
+            total,
+          },
+        },
+      };
     } catch (error) {
       strapi.log.error("public courses endpoint failed");
       strapi.log.error(error);
@@ -110,6 +128,39 @@ export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
       ctx.body = {
         error: {
           message: "Unable to load courses.",
+        },
+      };
+    }
+  },
+
+  async courseBySlug(ctx: any): Promise<void> {
+    try {
+      const { slug } = ctx.params;
+      const course = await strapi.documents("api::course.course").findFirst({
+        filters: { slug: { $eq: slug } },
+        populate: ["thumbnail", "instructor", "lessons"],
+      });
+
+      if (!course) {
+        ctx.status = 404;
+        ctx.body = {
+          error: {
+            message: "Course not found.",
+          },
+        };
+        return;
+      }
+
+      ctx.body = {
+        data: course,
+      };
+    } catch (error) {
+      strapi.log.error("public course by slug endpoint failed");
+      strapi.log.error(error);
+      ctx.status = 500;
+      ctx.body = {
+        error: {
+          message: "Unable to load course.",
         },
       };
     }
