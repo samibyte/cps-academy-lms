@@ -240,9 +240,9 @@ export default function MyCoursesList({
 
                   {course.tags && course.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 pt-1">
-                      {course.tags.slice(0, 3).map((tag) => (
+                      {course.tags.slice(0, 3).map((tag, index) => (
                         <span
-                          key={tag}
+                          key={`${tag}-${index}`}
                           className="inline-flex items-center gap-0.5 text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary/5 text-primary border border-primary/10"
                         >
                           <Tag className="size-2" />

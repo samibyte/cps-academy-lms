@@ -29,8 +29,7 @@ export interface StrapiListResponse<T> {
   };
 }
 
-
-// Domain types 
+// Domain types
 
 export interface CourseThumbnail {
   id: number;
@@ -65,6 +64,7 @@ export interface Course {
   level: "Beginner" | "Intermediate" | "Advanced";
   price: number | null;
   isFree: boolean;
+  isFeatured: boolean;
   tags: string[] | null;
   thumbnail: CourseThumbnail | null;
   instructor: CourseInstructor | null;
@@ -192,3 +192,14 @@ export interface BlogPost {
     fullName: string | null;
   };
 }
+
+export interface AdminUser {
+  documentId: string;
+  username: string;
+  fullName: string | null;
+  email: string;
+  blocked: boolean;
+  createdAt: string;
+  role: { name: string };
+}
+

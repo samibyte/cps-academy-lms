@@ -19,7 +19,7 @@ export default async function QuizPage({ params }: QuizPageProps) {
   const course = courseRes.data;
   if (!course) redirect("/dashboard/student/my-courses");
 
-  const progressRes = await getLessonProgresses(courseId, token);
+  const progressRes = await getLessonProgresses(courseId, token, me.documentId);
   const progressList = progressRes.data;
 
   const completedLessonDocIds = new Set(
@@ -38,7 +38,11 @@ export default async function QuizPage({ params }: QuizPageProps) {
   const quiz = await getQuizForCourse(courseId, token);
   if (!quiz) redirect(`/dashboard/student/courses/${courseId}`);
 
-  const attemptsRes = await getMyQuizAttempts(quiz.documentId, token);
+  const attemptsRes = await getMyQuizAttempts(
+    quiz.documentId,
+    token,
+    me.documentId,
+  );
   const attempts = attemptsRes.data;
 
   return (

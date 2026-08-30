@@ -1,5 +1,5 @@
 import "server-only";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient, ApiError } from "@/lib/apiClient";
 import type {
   StrapiListResponse,
   StrapiSingleResponse,
@@ -8,8 +8,8 @@ import type {
   Quiz,
   Enrollment,
   LessonProgress,
-  QuizAttempt,
   BlogPost,
+  AdminUser,
 } from "./types";
 
 const STRAPI_URL = process.env.API_URL!;
@@ -52,6 +52,46 @@ export async function getAllCourses(token: string) {
   );
 }
 
+export interface InstructorSummary {
+  documentId: string;
+  username: string;
+  fullName: string | null;
+  email: string;
+}
+
+export async function getInstructors(token: string) {
+  const res = await apiClient<{ data: InstructorSummary[] }>(
+    `/api/admin/instructors`,
+    { token },
+  );
+  return res.data;
+}
+
+export async function uploadCourseThumbnail(file: File, token: string) {
+  const body = new FormData();
+  body.append("files", file);
+
+  const res = await fetch(`${STRAPI_URL}/api/admin/course-thumbnail`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const message =
+      data?.error?.message ?? data?.message ?? `Upload error: ${res.status}`;
+    throw new ApiError(res.status, message);
+  }
+
+  return res.json() as Promise<{
+    data: { id: number; documentId: string; name: string; url: string };
+  }>;
+}
+
 export async function getCourseWithLessons(courseId: string, token: string) {
   return apiClient<StrapiSingleResponse<Course>>(
     `/api/courses/${courseId}?` +
@@ -66,7 +106,7 @@ export async function getCourseWithLessons(courseId: string, token: string) {
   );
 }
 
-export async function createCourse(data: Partial<Course>, token: string) {
+export async function createCourse(data: Record<string, unknown>, token: string) {
   return apiClient<StrapiSingleResponse<Course>>(`/api/courses`, {
     method: "POST",
     token,
@@ -129,7 +169,7 @@ export async function deleteLesson(id: string, token: string) {
   });
 }
 
-// ─── QUIZZES ─────────────────────────────────────────────────────────────────────
+// QUIZZES
 
 export async function getQuizForCourseAdmin(courseId: string, token: string) {
   const res = await apiClient<StrapiListResponse<Quiz>>(
@@ -214,6 +254,47 @@ export async function updateBlogPost(
 export async function deleteBlogPost(id: string, token: string) {
   return apiClient(`/api/blog-posts/${id}`, {
     method: "DELETE",
+    token,
+  });
+}
+
+// ADMIN USER MANAGEMENT
+
+export async function getAdminUsers(token: string) {
+  const res = await apiClient<{ data: AdminUser[] }>("/api/admin/users", { token });
+  return res.data;
+}
+
+export async function adminUpdateUser(
+  documentId: string,
+  data: { fullName?: string; username?: string; email?: string },
+  token: string
+) {
+  return apiClient<{ data: { message: string } }>(`/api/admin/users/${documentId}`, {
+    method: "PUT",
+    token,
+    body: data,
+  });
+}
+
+export async function adminUpdateUserRole(
+  documentId: string,
+  role: string,
+  token: string
+) {
+  return apiClient<{ data: { message: string } }>(`/api/admin/users/${documentId}/role`, {
+    method: "PUT",
+    token,
+    body: { role },
+  });
+}
+
+export async function adminToggleBlockUser(
+  documentId: string,
+  token: string
+) {
+  return apiClient<{ data: { blocked: boolean } }>(`/api/admin/users/${documentId}/block`, {
+    method: "PUT",
     token,
   });
 }

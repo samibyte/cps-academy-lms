@@ -24,7 +24,7 @@ export default async function MyCoursesPage() {
   const enrollmentsRes = await getMyEnrollments(token, me.documentId);
   const enrollments = enrollmentsRes.data;
 
-  const progressMap = await buildProgressMap(enrollments, token);
+  const progressMap = await buildProgressMap(enrollments, token, me.documentId);
 
   // Sort: in-progress courses first, completed last
   const sortedEnrollments = [...enrollments].sort((a, b) => {

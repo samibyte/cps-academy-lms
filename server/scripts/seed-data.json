@@ -1,0 +1,1310 @@
+{
+  "users": [
+    {
+      "_ref": "user.instructor-1",
+      "_role": "instructor",
+      "username": "rahul.sharma",
+      "email": "rahul.sharma@example.com",
+      "password": "Instructor123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Rahul Sharma",
+      "isActive": true
+    },
+    {
+      "_ref": "user.instructor-2",
+      "_role": "instructor",
+      "username": "ananya.iyer",
+      "email": "ananya.iyer@example.com",
+      "password": "Instructor123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Ananya Iyer",
+      "isActive": true
+    },
+    {
+      "_ref": "user.instructor-3",
+      "_role": "instructor",
+      "username": "priya.nair",
+      "email": "priya.nair@example.com",
+      "password": "Instructor123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Priya Nair",
+      "isActive": true
+    },
+    {
+      "_ref": "user.instructor-demo",
+      "_role": "instructor",
+      "username": "instructor",
+      "email": "instructor@example.com",
+      "password": "Cps-academy1",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Demo Instructor",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-1",
+      "_role": "authenticated",
+      "username": "david.kim",
+      "email": "david.kim@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "David Kim",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-2",
+      "_role": "authenticated",
+      "username": "emma.wilson",
+      "email": "emma.wilson@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Emma Wilson",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-3",
+      "_role": "authenticated",
+      "username": "leon.chen",
+      "email": "leon.chen@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Leon Chen",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-4",
+      "_role": "authenticated",
+      "username": "sophia.martin",
+      "email": "sophia.martin@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Sophia Martin",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-5",
+      "_role": "authenticated",
+      "username": "noah.patel",
+      "email": "noah.patel@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Noah Patel",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-6",
+      "_role": "authenticated",
+      "username": "mia.rodriguez",
+      "email": "mia.rodriguez@example.com",
+      "password": "Student123!",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Mia Rodriguez",
+      "isActive": true
+    },
+    {
+      "_ref": "user.student-demo",
+      "_role": "authenticated",
+      "username": "student",
+      "email": "student@example.com",
+      "password": "Cps-academy1",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Demo Student",
+      "isActive": true
+    },
+    {
+      "_ref": "user.cmr-demo",
+      "_role": "content_manager",
+      "username": "cmr",
+      "email": "cmr@example.com",
+      "password": "Cps-academy1",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Demo Content Manager",
+      "isActive": true
+    },
+    {
+      "_ref": "user.admin-demo",
+      "_role": "admin",
+      "username": "admin",
+      "email": "admin@example.com",
+      "password": "Cps-academy1",
+      "provider": "local",
+      "confirmed": true,
+      "blocked": false,
+      "fullName": "Demo Admin",
+      "isActive": true
+    }
+  ],
+  "courses": [
+    {
+      "_ref": "course.cp-fundamentals",
+      "title": "Competitive Programming Fundamentals",
+      "slug": "competitive-programming-fundamentals",
+      "shortDescription": "Master time complexity, binary search and problem-solving basics needed for your first contests.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Start your CP journey" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "This course builds the core toolkit of every competitive programmer: complexity analysis, efficient implementation and classic problem patterns." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Each lesson pairs a concept with problems drawn from Codeforces and AtCoder so you train exactly the way you'll compete." }] }
+      ],
+      "level": "Beginner",
+      "tags": ["competitive-programming", "complexity", "binary-search", "beginner"],
+      "price": 0,
+      "isFree": true,
+      "isFeatured": true,
+      "instructor": { "$ref": "user.instructor-1" }
+    },
+    {
+      "_ref": "course.cp-cpp",
+      "title": "Modern C++ for Competitive Programming",
+      "slug": "modern-cpp-for-competitive-programming",
+      "shortDescription": "A portable C++ toolbox: fast I/O, STL containers, bitsets and the templates top competitors ship by default.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Write less, run fast" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Most contestants waste their first contest hour fighting the language. This course removes that friction with a battle-tested C++ setup." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "You will learn fast I/O, the difference between each STL container, and the snippet templates that save you minutes in every round." }] }
+      ],
+      "level": "Beginner",
+      "tags": ["c++", "stl", "templates", "fast-io"],
+      "price": 0,
+      "isFree": true,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-3" }
+    },
+    {
+      "_ref": "course.ds-algorithms",
+      "title": "Data Structures for Contest Programming",
+      "slug": "data-structures-for-contest-programming",
+      "shortDescription": "Master the data structures that win contests: Fenwick trees, segment trees, heaps and DSU.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "The builder's toolbox" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Learn to choose and implement the right structure for every constraint: from O(log n) range queries to union-find in graph problems." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Hands-on implementations are written in C++ and Python with time analysis for every operation." }] }
+      ],
+      "level": "Intermediate",
+      "tags": ["data-structures", "segment-tree", "fenwick", "dsu"],
+      "price": 99,
+      "isFree": false,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-1" }
+    },
+    {
+      "_ref": "course.string-algorithms",
+      "title": "String Algorithms: KMP, Z-Function and Trie",
+      "slug": "string-algorithms-kmp-z-function-trie",
+      "shortDescription": "Pattern matching, prefix functions and tries that power every text-heavy contest problem.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Patterns in the haystack" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Strings appear in every third contest problem. Learn the linear-time algorithms behind them without drowning in theory." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "From the failure function of KMP to Z-lines and trie-based autocomplete, every algorithm is implemented from scratch." }] }
+      ],
+      "level": "Intermediate",
+      "tags": ["string-algorithms", "kmp", "z-function", "trie"],
+      "price": 129,
+      "isFree": false,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-3" }
+    },
+    {
+      "_ref": "course.math-cp",
+      "title": "Mathematics for Competitive Programming",
+      "slug": "mathematics-for-competitive-programming",
+      "shortDescription": "Number theory, combinatorics and modular arithmetic — the math toolkit behind hard Codeforces and ICPC tasks.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "The hidden half of every problem" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "When the algorithm is obvious but the math is not, contests are won by contestants who can count and factorize fast." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Cover primes, modular inverses, binomial coefficients and the combinatorial reasoning that appears in hard ratings." }] }
+      ],
+      "level": "Intermediate",
+      "tags": ["number-theory", "combinatorics", "modular-arithmetic"],
+      "price": 179,
+      "isFree": false,
+      "isFeatured": true,
+      "instructor": { "$ref": "user.instructor-1" }
+    },
+    {
+      "_ref": "course.advanced-algorithms",
+      "title": "Advanced Algorithms and Graph Theory",
+      "slug": "advanced-algorithms-and-graph-theory",
+      "shortDescription": "Take on DP on trees, flows, and advanced graph algorithms used in ICPC-level problems.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Beyond the basics" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Explore the advanced topics that separate national finalists: tree DP, centroid decomposition, flows and matching." }] }
+      ],
+      "level": "Advanced",
+      "tags": ["graph-theory", "dp", "flows", "icpc"],
+      "price": 249,
+      "isFree": false,
+      "isFeatured": true,
+      "instructor": { "$ref": "user.instructor-2" }
+    },
+    {
+      "_ref": "course.geometry",
+      "title": "Computational Geometry for ICPC",
+      "slug": "computational-geometry-for-icpc",
+      "shortDescription": "Vectors, line intersections, polygons and convex hulls implemented with the precision tricks contest setters expect.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Geometry without the guessing" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Geometry problems punish sloppy precision. Learn the double-epsilon conventions, orientation tests and hull algorithms that just work." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "We implement every primitive from scratch and stress-test them against brute-force simpler versions." }] }
+      ],
+      "level": "Advanced",
+      "tags": ["geometry", "convex-hull", "icpc", "vectors"],
+      "price": 199,
+      "isFree": false,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-2" }
+    },
+    {
+      "_ref": "course.contest-prep",
+      "title": "Codeforces and ICPC Contest Preparation",
+      "slug": "codeforces-and-icpc-contest-preparation",
+      "shortDescription": "A structured blueprint to climb ratings: reading speed, debugging, math tricks and mock-contest strategy.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Win the contest, not just the problems" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Competitive success is about more than algorithms. Learn how to allocate time, pick problem order and avoid the bugs that cost you rating." }] }
+      ],
+      "level": "Intermediate",
+      "tags": ["codeforces", "icpc", "strategy", "rating"],
+      "price": 149,
+      "isFree": false,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-2" }
+    },
+    {
+      "_ref": "course.cp-bootcamp",
+      "title": "Zero to Hero: CP Bootcamp",
+      "slug": "zero-to-hero-cp-bootcamp",
+      "shortDescription": "A guided crash course that takes complete beginners from their first submission to pacing themselves in rated contests.",
+      "description": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "One track, every day" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "The fastest way to learn is a fixed daily routine. This bootcamp gives you the exact sequence: judge setup, language basics, practice loops and self-review." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Finish the track and you will have 60+ solved problems and a repeatable weekly schedule." }] }
+      ],
+      "level": "Beginner",
+      "tags": ["beginner", "bootcamp", "practice", "oj"],
+      "price": 0,
+      "isFree": true,
+      "isFeatured": false,
+      "instructor": { "$ref": "user.instructor-demo" }
+    }
+  ],
+  "lessons": [
+    {
+      "_ref": "lesson.big-o",
+      "title": "Time and Space Complexity Mastery",
+      "slug": "time-and-space-complexity-mastery",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Read the constraints first" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Learn to pick the right algorithm from the constraints: n <= 10^5 usually means O(n log n), while n <= 10 the factorial or bitmask brute force." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "We work through real problem statements and estimate whether the intended solution fits the 2-second time limit." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/big-o-mastery.mp4",
+      "order": 1,
+      "duration": 42,
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "lesson.binary-search",
+      "title": "Binary Search on the Answer",
+      "slug": "binary-search-on-the-answer",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "When the answer is monotonic" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Many problems hide a decision function that is monotonic. Detect them, then apply the binary search template on the answer domain." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "We solve the classic 'aggressive cows' and 'capacity to ship packages' problems step by step." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/binary-search-answer.mp4",
+      "order": 2,
+      "duration": 38,
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "lesson.cpp-fastio",
+      "title": "Fast I/O and Reading Input Like a Pro",
+      "slug": "fast-io-and-reading-input-like-a-pro",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "cin is not the problem, the sync is" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "A single line turns cin/cout into a match for scanf/printf: ios::sync_with_stdio(false); cin.tie(nullptr);. We benchmark it against the raw alternatives." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "You also learn custom getchar-based readers for the rare 10^7-input problems." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/cpp-fast-io.mp4",
+      "order": 1,
+      "duration": 25,
+      "course": { "$ref": "course.cp-cpp" }
+    },
+    {
+      "_ref": "lesson.cpp-stl",
+      "title": "The STL Toolbox: Containers and Algorithms",
+      "slug": "the-stl-toolbox-containers-and-algorithms",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Know your container before you need it" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Vector, deque, set, map, unordered_* and the priority_queue each trade off in ways that decide whether your solution passes." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "We cover lower_bound, next_permutation, sort with custom comparators and bitset tricks." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/cpp-stl-toolbox.mp4",
+      "order": 2,
+      "duration": 48,
+      "course": { "$ref": "course.cp-cpp" }
+    },
+    {
+      "_ref": "lesson.dsu-graphs",
+      "title": "DSU, BFS and Dijkstra Patterns",
+      "slug": "dsu-bfs-and-dijkstra-patterns",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Connectivity and shortest paths" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Implement union-find with path compression, BFS for unweighted shortest paths, and Dijkstra with a priority queue. Compare when each applies." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/dsu-bfs-dijkstra.mp4",
+      "order": 1,
+      "duration": 55,
+      "course": { "$ref": "course.ds-algorithms" }
+    },
+    {
+      "_ref": "lesson.graph-scc",
+      "title": "SCC, Topological Order and Bridges",
+      "slug": "scc-topological-order-and-bridges",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Decompose the graph" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Tarjan's SCC algorithm, Kahn's topological sort and bridge/cut-point detection with a single DFS low-link pass." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/scc-topo-bridges.mp4",
+      "order": 2,
+      "duration": 51,
+      "course": { "$ref": "course.ds-algorithms" }
+    },
+    {
+      "_ref": "lesson.string-kmp",
+      "title": "KMP and the Failure Function",
+      "slug": "kmp-and-the-failure-function",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "A pattern that knows itself" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Build the prefix function and scan any text in O(n + m). We prove why the pointer never moves more than n times." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/kmp-failure-function.mp4",
+      "order": 1,
+      "duration": 39,
+      "course": { "$ref": "course.string-algorithms" }
+    },
+    {
+      "_ref": "lesson.string-trie",
+      "title": "Tries and Lexicographic Problems",
+      "slug": "tries-and-lexicographic-problems",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Strings as trees" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Insert, search and prefix-count a billion strings with a trie. Extend it to XOR-max queries with a binary trie." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/trie-lexicographic.mp4",
+      "order": 2,
+      "duration": 33,
+      "course": { "$ref": "course.string-algorithms" }
+    },
+    {
+      "_ref": "lesson.math-primes",
+      "title": "Primes, Sieves and Factorization",
+      "slug": "primes-sieves-and-factorization",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Every integer is a product of primes" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Sieve of Eratosthenes, linear sieve, smallest-prime-factor precomputation and fast factorization via SPF." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/primes-sieves.mp4",
+      "order": 1,
+      "duration": 44,
+      "course": { "$ref": "course.math-cp" }
+    },
+    {
+      "_ref": "lesson.math-combinatorics",
+      "title": "Combinatorics and Modular Inverse",
+      "slug": "combinatorics-and-modular-inverse",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Counting under a modulus" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Fermat's little theorem, modular inverses, precomputed factorials and nCr queries in O(1) after O(n) setup." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/combinatorics-modular-inverse.mp4",
+      "order": 2,
+      "duration": 41,
+      "course": { "$ref": "course.math-cp" }
+    },
+    {
+      "_ref": "lesson.advanced-dp",
+      "title": "Advanced DP and Combinatorics",
+      "slug": "advanced-dp-and-combinatorics",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Think in states, not steps" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Master digit DP, DP on trees and inclusion-exclusion for counting problems. Practice modular arithmetic under a 10^9 + 7 modulus." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/advanced-dp.mp4",
+      "order": 1,
+      "duration": 61,
+      "course": { "$ref": "course.advanced-algorithms" }
+    },
+    {
+      "_ref": "lesson.max-flow",
+      "title": "Maximum Flow and Minimum Cut",
+      "slug": "maximum-flow-and-minimum-cut",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "The most reused theorem in ICPC" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Dinic's algorithm with the max-flow / min-cut theorem. Then reduce bipartite matching and vertex cover to a flow network." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/max-flow-min-cut.mp4",
+      "order": 2,
+      "duration": 57,
+      "course": { "$ref": "course.advanced-algorithms" }
+    },
+    {
+      "_ref": "lesson.geometry-basics",
+      "title": "Vectors and Basic Geometry Primitives",
+      "slug": "vectors-and-basic-geometry-primitives",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Every polygon is a vector story" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Dot and cross products, orientation tests and the epsilon convention that deletes floating point rage from geometry problems." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/geometry-basics.mp4",
+      "order": 1,
+      "duration": 35,
+      "course": { "$ref": "course.geometry" }
+    },
+    {
+      "_ref": "lesson.convex-hull",
+      "title": "Convex Hulls and the Graham Scan",
+      "slug": "convex-hulls-and-the-graham-scan",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Wrap every point in a tight fence" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Sort by polar angle, maintain a stack with the orientation test, and build the hull in O(n log n)." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/convex-hull.mp4",
+      "order": 2,
+      "duration": 46,
+      "course": { "$ref": "course.geometry" }
+    },
+    {
+      "_ref": "lesson.contest-strategy",
+      "title": "Contest Strategy and Implementation Speed",
+      "slug": "contest-strategy-and-implementation-speed",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Rating climbs with discipline" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Learn how to read problems fast, order your attempts, manage penalties and template your I/O. Then practice with timed mock contests." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/contest-strategy.mp4",
+      "order": 1,
+      "duration": 47,
+      "course": { "$ref": "course.contest-prep" }
+    },
+    {
+      "_ref": "lesson.bootcamp-oj",
+      "title": "Getting Started with Online Judges",
+      "slug": "getting-started-with-online-judges",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Your first submission" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Set up a Codeforces and AtCoder account, pick a language and submit a greeting problem. Learn what WA, TLE and RE mean." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/online-judges-intro.mp4",
+      "order": 1,
+      "duration": 22,
+      "course": { "$ref": "course.cp-bootcamp" }
+    },
+    {
+      "_ref": "lesson.bootcamp-practice",
+      "title": "Building a Daily Practice Routine",
+      "slug": "building-a-daily-practice-routine",
+      "content": [
+        { "type": "heading", "level": 3, "children": [{ "type": "text", "text": "Sixty minutes a day beats six hours on Sunday" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Structure a repeatable daily loop: warm-up, one hard problem, editorial review, and a weekly retro log to track your rating drift." }] }
+      ],
+      "videoUrl": "https://cdn.example.com/videos/practice-routine.mp4",
+      "order": 2,
+      "duration": 29,
+      "course": { "$ref": "course.cp-bootcamp" }
+    }
+  ],
+  "quizzes": [
+    {
+      "_ref": "quiz.big-o",
+      "title": "Complexity Analysis Quiz",
+      "description": "Test your ability to reason about time and space complexity under contest constraints.",
+      "passingScore": 60,
+      "timeLimit": 10,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "What is the time complexity of binary search on a sorted array of size n?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "C",
+          "options": [
+            { "key": "A", "value": "O(n)" },
+            { "key": "B", "value": "O(sqrt(n))" },
+            { "key": "C", "value": "O(log n)" },
+            { "key": "D", "value": "O(n log n)" }
+          ]
+        },
+        {
+          "question": "For n <= 10^5 and a 2-second limit, which complexity is usually acceptable?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "O(n^2)" },
+            { "key": "B", "value": "O(n log n)" },
+            { "key": "C", "value": "O(2^n)" },
+            { "key": "D", "value": "O(n!)" }
+          ]
+        },
+        {
+          "question": "Which algorithm's worst-case complexity is O(n log n)?",
+          "points": 10,
+          "order": 3,
+          "correctOption": "D",
+          "options": [
+            { "key": "A", "value": "Bubble sort" },
+            { "key": "B", "value": "Linear search" },
+            { "key": "C", "value": "Fibonacci naive recursion" },
+            { "key": "D", "value": "Merge sort" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "quiz.cpp",
+      "title": "Modern C++ Quick Quiz",
+      "description": "Check your STL, fast I/O and container choice instincts.",
+      "passingScore": 60,
+      "timeLimit": 8,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "Which setup makes C++ cin/cout fast enough for most contests?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "ios::sync_with_stdio(false); cin.tie(nullptr);" },
+            { "key": "B", "value": "cin.sync_with_stdio(true); cout.tie(nullptr);" },
+            { "key": "C", "value": "using namespace stdios;" },
+            { "key": "D", "value": "printf with cin together" }
+          ]
+        },
+        {
+          "question": "Which STL container gives average O(1) key lookup?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "std::vector" },
+            { "key": "B", "value": "std::unordered_map" },
+            { "key": "C", "value": "std::set" },
+            { "key": "D", "value": "std::deque" }
+          ]
+        },
+        {
+          "question": "What does std::lower_bound on a sorted range return?",
+          "points": 10,
+          "order": 3,
+          "correctOption": "C",
+          "options": [
+            { "key": "A", "value": "First element greater than the value" },
+            { "key": "B", "value": "Last element equal to the value" },
+            { "key": "C", "value": "First element not less than the value" },
+            { "key": "D", "value": "A random element near the value" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.cp-cpp" }
+    },
+    {
+      "_ref": "quiz.data-structures",
+      "title": "Data Structures and Graphs Quiz",
+      "description": "Validate your knowledge of Fenwick trees, segment trees, DSU and shortest paths.",
+      "passingScore": 70,
+      "timeLimit": 8,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "Which structure answers range-sum queries in O(log n) with O(n) memory?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "Fenwick tree" },
+            { "key": "B", "value": "Hash map" },
+            { "key": "C", "value": "Linked list" },
+            { "key": "D", "value": "Stack" }
+          ]
+        },
+        {
+          "question": "What is the near-constant amortized complexity of find with path compression in DSU?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "D",
+          "options": [
+            { "key": "A", "value": "O(n)" },
+            { "key": "B", "value": "O(log n)" },
+            { "key": "C", "value": "O(sqrt(n))" },
+            { "key": "D", "value": "O(alpha(n)), the inverse Ackermann" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.ds-algorithms" }
+    },
+    {
+      "_ref": "quiz.string-algorithms",
+      "title": "String Algorithms Quiz",
+      "description": "Test your grasp of KMP, Z-function and trie fundamentals.",
+      "passingScore": 60,
+      "timeLimit": 10,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "What is the time complexity of building the KMP prefix (failure) function for a pattern of length m?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "O(m)" },
+            { "key": "B", "value": "O(m log m)" },
+            { "key": "C", "value": "O(m^2)" },
+            { "key": "D", "value": "O(2^m)" }
+          ]
+        },
+        {
+          "question": "Which structure is purpose-built to answer common-prefix and autocomplete queries?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "Hash table" },
+            { "key": "B", "value": "Trie" },
+            { "key": "C", "value": "Singly linked list" },
+            { "key": "D", "value": "Binary heap" }
+          ]
+        },
+        {
+          "question": "Given text of length n and pattern of length m, what does a full KMP search cost?",
+          "points": 10,
+          "order": 3,
+          "correctOption": "D",
+          "options": [
+            { "key": "A", "value": "O(n * m)" },
+            { "key": "B", "value": "O(n^2)" },
+            { "key": "C", "value": "O(m^2)" },
+            { "key": "D", "value": "O(n + m)" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.string-algorithms" }
+    },
+    {
+      "_ref": "quiz.math-cp",
+      "title": "Math for CP Quiz",
+      "description": "Number theory and combinatorics under a modular lens.",
+      "passingScore": 60,
+      "timeLimit": 10,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "Which method lists all primes up to n in O(n log log n)?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "Sieve of Eratosthenes" },
+            { "key": "B", "value": "Trial division" },
+            { "key": "C", "value": "Miller-Rabin" },
+            { "key": "D", "value": "Pollard's rho" }
+          ]
+        },
+        {
+          "question": "Fermat's little theorem a^(p-1) == 1 (mod p) requires p to be prime and...",
+          "points": 10,
+          "order": 2,
+          "correctOption": "C",
+          "options": [
+            { "key": "A", "value": "a divisible by p" },
+            { "key": "B", "value": "a even" },
+            { "key": "C", "value": "p not dividing a (gcd(a, p) = 1)" },
+            { "key": "D", "value": "p a power of two" }
+          ]
+        },
+        {
+          "question": "To compute nCr mod p efficiently with precomputed factorials, which extra precomputation do you need?",
+          "points": 10,
+          "order": 3,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "A suffix of every prime below n" },
+            { "key": "B", "value": "Modular inverses of the factorials" },
+            { "key": "C", "value": "A Fenwick tree over factorials" },
+            { "key": "D", "value": "The totient of every index" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.math-cp" }
+    },
+    {
+      "_ref": "quiz.advanced",
+      "title": "Advanced Algorithms Quiz",
+      "description": "Check your grasp of tree DP, flows and combinatorics.",
+      "passingScore": 65,
+      "timeLimit": 12,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "Which algorithm computes the maximum flow in a network with O(V^2 E) worst case?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "KMP string matching" },
+            { "key": "B", "value": "Dinic's algorithm" },
+            { "key": "C", "value": "Bellman-Ford" },
+            { "key": "D", "value": "Trie insertion" }
+          ]
+        },
+        {
+          "question": "In digit DP, what is the typical state that avoids overcounting?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "C",
+          "options": [
+            { "key": "A", "value": "Only the position in the digit string" },
+            { "key": "B", "value": "Only the current remainder" },
+            { "key": "C", "value": "Position, tight flag, and prefix properties" },
+            { "key": "D", "value": "The full built number as a key" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.advanced-algorithms" }
+    },
+    {
+      "_ref": "quiz.geometry",
+      "title": "Computational Geometry Quiz",
+      "description": "Orientation tests, precision and convex hull instincts.",
+      "passingScore": 60,
+      "timeLimit": 12,
+      "maxAttempts": 3,
+      "questions": [
+        {
+          "question": "What does the sign of the cross product (b - a) x (c - a) tell you?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "The distance between a and b" },
+            { "key": "B", "value": "The turn direction of c relative to line ab" },
+            { "key": "C", "value": "The length of the longest side" },
+            { "key": "D", "value": "The area of the triangle doubled and its sign" }
+          ]
+        },
+        {
+          "question": "Which algorithm builds the convex hull of n points in O(n log n)?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "Graham scan" },
+            { "key": "B", "value": "KMP" },
+            { "key": "C", "value": "Dijkstra" },
+            { "key": "D", "value": "Burrows-Wheeler transform" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.geometry" }
+    },
+    {
+      "_ref": "quiz.contest",
+      "title": "Contest Tactics Quiz",
+      "description": "See if your contest-day decisions are rating-proof.",
+      "passingScore": 60,
+      "timeLimit": 6,
+      "maxAttempts": 2,
+      "questions": [
+        {
+          "question": "You have solved two tasks and are stuck on the third. What is the best move mid-contest?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "B",
+          "options": [
+            { "key": "A", "value": "Keep submitting the same wrong idea" },
+            { "key": "B", "value": "Scan remaining tasks for easier points" },
+            { "key": "C", "value": "Stop and wait for submissions to judge" },
+            { "key": "D", "value": "Rewrite the whole first solution" }
+          ]
+        },
+        {
+          "question": "Which penalty most hurts your Codeforces rating?",
+          "points": 10,
+          "order": 2,
+          "correctOption": "A",
+          "options": [
+            { "key": "A", "value": "Wrong submissions close together on the same problem" },
+            { "key": "B", "value": "Reading the statement slowly at the start" },
+            { "key": "C", "value": "Testing samples locally" },
+            { "key": "D", "value": "Using a custom template for I/O" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.contest-prep" }
+    },
+    {
+      "_ref": "quiz.bootcamp",
+      "title": "Bootcamp Fundamentals Quiz",
+      "description": "A light check that the practice loop is locked in.",
+      "passingScore": 50,
+      "timeLimit": 5,
+      "maxAttempts": 2,
+      "questions": [
+        {
+          "question": "Which combination forms the core of a daily practice routine?",
+          "points": 10,
+          "order": 1,
+          "correctOption": "C",
+          "options": [
+            { "key": "A", "value": "Only watching editorials" },
+            { "key": "B", "value": "Only solving easy problems" },
+            { "key": "C", "value": "Warm-up, a hard problem, and editorial review" },
+            { "key": "D", "value": "Skipping practice until contests" }
+          ]
+        }
+      ],
+      "course": { "$ref": "course.cp-bootcamp" }
+    }
+  ],
+  "blogPosts": [
+    {
+      "_ref": "blog-1",
+      "title": "Mastering Binary Search: The Predicate Pattern",
+      "slug": "mastering-binary-search-predicate-pattern",
+      "excerpt": "Stop memorizing templates. Learn to think in decision functions and binary search will become automatic.",
+      "body": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "The predicate pattern" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Every binary-search problem is secretly a monotonic predicate. Identify the boundary you are looking for and the template writes itself." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "I break down five Codeforces problems that all reduce to the same predicate trick." }] }
+      ],
+      "author": { "$ref": "user.instructor-1" }
+    },
+    {
+      "_ref": "blog-2",
+      "title": "10 Data Structures Every Competitive Programmer Needs",
+      "slug": "10-data-structures-every-competitive-programmer-needs",
+      "excerpt": "From arrays to lazy segment trees: the structures that cover 90 percent of contest problems.",
+      "body": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Cover more ground" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "A small toolbox of structures gives you outsized coverage. Here is the ranked list and the exact scenarios each one dominates." }] }
+      ],
+      "author": { "$ref": "user.instructor-1" }
+    },
+    {
+      "_ref": "blog-3",
+      "title": "The Blue to Purple Roadmap on Codeforces",
+      "slug": "blue-to-purple-roadmap-codeforces",
+      "excerpt": "A realistic training plan: which topics, how many problems per week, and what to review after every contest.",
+      "body": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "A plan beats random grinding" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Rating growth is a strategy game. Draft your weekly problem mix by rating band and log every contest with a retro note." }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Follow the roadmap for 16 weeks and you will see consistent rating gains." }] }
+      ],
+      "author": { "$ref": "user.instructor-2" }
+    },
+    {
+      "_ref": "blog-4",
+      "title": "Edge Cases That End Contests",
+      "slug": "edge-cases-that-end-contests",
+      "excerpt": "Empty inputs, 1-based indexing, overflow: the silent killers of otherwise perfect solutions.",
+      "body": [
+        { "type": "heading", "level": 2, "children": [{ "type": "text", "text": "Kill the bug before it kills you" }] },
+        { "type": "paragraph", "children": [{ "type": "text", "text": "Most failed submissions are edge cases, not algorithm mistakes. Build a checklist and run it on every problem before submitting." }] }
+      ],
+      "author": { "$ref": "user.instructor-2" }
+    }
+  ],
+  "enrollments": [
+    {
+      "_ref": "enrollment-1",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-12T09:30:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "enrollment-2",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-14T14:10:00.000Z",
+      "student": { "$ref": "user.student-2" },
+      "course": { "$ref": "course.ds-algorithms" }
+    },
+    {
+      "_ref": "enrollment-3",
+      "enrollment_status": "completed",
+      "completedAt": "2026-07-28T16:45:00.000Z",
+      "lastAccessedAt": "2026-07-28T16:45:00.000Z",
+      "student": { "$ref": "user.student-3" },
+      "course": { "$ref": "course.advanced-algorithms" }
+    },
+    {
+      "_ref": "enrollment-4",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-20T11:00:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.contest-prep" }
+    },
+    {
+      "_ref": "enrollment-5",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-18T09:45:00.000Z",
+      "student": { "$ref": "user.student-4" },
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "enrollment-6",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-22T15:20:00.000Z",
+      "student": { "$ref": "user.student-4" },
+      "course": { "$ref": "course.math-cp" }
+    },
+    {
+      "_ref": "enrollment-7",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-21T12:05:00.000Z",
+      "student": { "$ref": "user.student-5" },
+      "course": { "$ref": "course.contest-prep" }
+    },
+    {
+      "_ref": "enrollment-8",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-25T10:30:00.000Z",
+      "student": { "$ref": "user.student-3" },
+      "course": { "$ref": "course.string-algorithms" }
+    },
+    {
+      "_ref": "enrollment-9",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-19T08:40:00.000Z",
+      "student": { "$ref": "user.student-6" },
+      "course": { "$ref": "course.cp-bootcamp" }
+    },
+    {
+      "_ref": "enrollment-10",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-26T13:15:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.cp-cpp" }
+    },
+    {
+      "_ref": "enrollment-11",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-27T17:05:00.000Z",
+      "student": { "$ref": "user.student-demo" },
+      "course": { "$ref": "course.cp-fundamentals" }
+    },
+    {
+      "_ref": "enrollment-12",
+      "enrollment_status": "active",
+      "lastAccessedAt": "2026-08-28T09:10:00.000Z",
+      "student": { "$ref": "user.student-demo" },
+      "course": { "$ref": "course.string-algorithms" }
+    }
+  ],
+  "lessonProgresses": [
+    {
+      "_ref": "progress-1",
+      "completed": true,
+      "completedAt": "2026-08-12T10:00:00.000Z",
+      "lastViewedAt": "2026-08-12T10:00:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.cp-fundamentals" },
+      "lesson": { "$ref": "lesson.big-o" }
+    },
+    {
+      "_ref": "progress-2",
+      "completed": false,
+      "lastViewedAt": "2026-08-13T08:15:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.cp-fundamentals" },
+      "lesson": { "$ref": "lesson.binary-search" }
+    },
+    {
+      "_ref": "progress-3",
+      "completed": true,
+      "completedAt": "2026-08-15T13:20:00.000Z",
+      "lastViewedAt": "2026-08-15T13:20:00.000Z",
+      "student": { "$ref": "user.student-2" },
+      "course": { "$ref": "course.ds-algorithms" },
+      "lesson": { "$ref": "lesson.dsu-graphs" }
+    },
+    {
+      "_ref": "progress-4",
+      "completed": true,
+      "completedAt": "2026-07-28T17:00:00.000Z",
+      "lastViewedAt": "2026-07-28T17:00:00.000Z",
+      "student": { "$ref": "user.student-3" },
+      "course": { "$ref": "course.advanced-algorithms" },
+      "lesson": { "$ref": "lesson.advanced-dp" }
+    },
+    {
+      "_ref": "progress-5",
+      "completed": true,
+      "completedAt": "2026-08-18T10:00:00.000Z",
+      "lastViewedAt": "2026-08-18T10:00:00.000Z",
+      "student": { "$ref": "user.student-4" },
+      "course": { "$ref": "course.cp-fundamentals" },
+      "lesson": { "$ref": "lesson.big-o" }
+    },
+    {
+      "_ref": "progress-6",
+      "completed": true,
+      "completedAt": "2026-08-22T15:40:00.000Z",
+      "lastViewedAt": "2026-08-22T15:40:00.000Z",
+      "student": { "$ref": "user.student-4" },
+      "course": { "$ref": "course.math-cp" },
+      "lesson": { "$ref": "lesson.math-primes" }
+    },
+    {
+      "_ref": "progress-7",
+      "completed": true,
+      "completedAt": "2026-08-21T12:20:00.000Z",
+      "lastViewedAt": "2026-08-21T12:20:00.000Z",
+      "student": { "$ref": "user.student-5" },
+      "course": { "$ref": "course.contest-prep" },
+      "lesson": { "$ref": "lesson.contest-strategy" }
+    },
+    {
+      "_ref": "progress-8",
+      "completed": true,
+      "completedAt": "2026-08-25T10:40:00.000Z",
+      "lastViewedAt": "2026-08-25T10:40:00.000Z",
+      "student": { "$ref": "user.student-3" },
+      "course": { "$ref": "course.string-algorithms" },
+      "lesson": { "$ref": "lesson.string-kmp" }
+    },
+    {
+      "_ref": "progress-9",
+      "completed": false,
+      "lastViewedAt": "2026-08-26T09:00:00.000Z",
+      "student": { "$ref": "user.student-3" },
+      "course": { "$ref": "course.string-algorithms" },
+      "lesson": { "$ref": "lesson.string-trie" }
+    },
+    {
+      "_ref": "progress-10",
+      "completed": true,
+      "completedAt": "2026-08-26T13:30:00.000Z",
+      "lastViewedAt": "2026-08-26T13:30:00.000Z",
+      "student": { "$ref": "user.student-1" },
+      "course": { "$ref": "course.cp-cpp" },
+      "lesson": { "$ref": "lesson.cpp-stl" }
+    },
+    {
+      "_ref": "progress-11",
+      "completed": true,
+      "completedAt": "2026-08-27T17:15:00.000Z",
+      "lastViewedAt": "2026-08-27T17:15:00.000Z",
+      "student": { "$ref": "user.student-6" },
+      "course": { "$ref": "course.cp-bootcamp" },
+      "lesson": { "$ref": "lesson.bootcamp-oj" }
+    },
+    {
+      "_ref": "progress-12",
+      "completed": true,
+      "completedAt": "2026-08-27T17:30:00.000Z",
+      "lastViewedAt": "2026-08-27T17:30:00.000Z",
+      "student": { "$ref": "user.student-demo" },
+      "course": { "$ref": "course.cp-fundamentals" },
+      "lesson": { "$ref": "lesson.big-o" }
+    },
+    {
+      "_ref": "progress-13",
+      "completed": true,
+      "completedAt": "2026-08-28T09:20:00.000Z",
+      "lastViewedAt": "2026-08-28T09:20:00.000Z",
+      "student": { "$ref": "user.student-demo" },
+      "course": { "$ref": "course.string-algorithms" },
+      "lesson": { "$ref": "lesson.string-kmp" }
+    }
+  ],
+  "quizAttempts": [
+    {
+      "_ref": "attempt-1",
+      "answers": {
+        "q1": "C",
+        "q2": "B",
+        "q3": "D"
+      },
+      "score": 30,
+      "totalPoints": 30,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-12T10:15:00.000Z",
+      "submittedAt": "2026-08-12T10:22:00.000Z",
+      "timeTaken": 420,
+      "student": { "$ref": "user.student-1" },
+      "quiz": { "$ref": "quiz.big-o" }
+    },
+    {
+      "_ref": "attempt-2",
+      "answers": {
+        "q1": "A",
+        "q2": "D"
+      },
+      "score": 10,
+      "totalPoints": 30,
+      "percentage": 33,
+      "passed": false,
+      "startedAt": "2026-08-12T11:00:00.000Z",
+      "submittedAt": "2026-08-12T11:09:00.000Z",
+      "timeTaken": 540,
+      "student": { "$ref": "user.student-1" },
+      "quiz": { "$ref": "quiz.big-o" }
+    },
+    {
+      "_ref": "attempt-3",
+      "answers": {
+        "q1": "A",
+        "q2": "D"
+      },
+      "score": 20,
+      "totalPoints": 20,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-15T14:00:00.000Z",
+      "submittedAt": "2026-08-15T14:07:00.000Z",
+      "timeTaken": 412,
+      "student": { "$ref": "user.student-2" },
+      "quiz": { "$ref": "quiz.data-structures" }
+    },
+    {
+      "_ref": "attempt-4",
+      "answers": {
+        "q1": "B",
+        "q2": "C"
+      },
+      "score": 20,
+      "totalPoints": 20,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-07-28T17:20:00.000Z",
+      "submittedAt": "2026-07-28T17:30:00.000Z",
+      "timeTaken": 590,
+      "student": { "$ref": "user.student-3" },
+      "quiz": { "$ref": "quiz.advanced" }
+    },
+    {
+      "_ref": "attempt-5",
+      "answers": {
+        "q1": "A",
+        "q2": "C",
+        "q3": "B"
+      },
+      "score": 30,
+      "totalPoints": 30,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-22T16:00:00.000Z",
+      "submittedAt": "2026-08-22T16:08:00.000Z",
+      "timeTaken": 480,
+      "student": { "$ref": "user.student-4" },
+      "quiz": { "$ref": "quiz.math-cp" }
+    },
+    {
+      "_ref": "attempt-6",
+      "answers": {
+        "q1": "A",
+        "q2": "A"
+      },
+      "score": 10,
+      "totalPoints": 20,
+      "percentage": 50,
+      "passed": false,
+      "startedAt": "2026-08-21T13:00:00.000Z",
+      "submittedAt": "2026-08-21T13:07:00.000Z",
+      "timeTaken": 410,
+      "student": { "$ref": "user.student-5" },
+      "quiz": { "$ref": "quiz.contest" }
+    },
+    {
+      "_ref": "attempt-7",
+      "answers": {
+        "q1": "A",
+        "q2": "B",
+        "q3": "C"
+      },
+      "score": 30,
+      "totalPoints": 30,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-26T14:00:00.000Z",
+      "submittedAt": "2026-08-26T14:05:00.000Z",
+      "timeTaken": 300,
+      "student": { "$ref": "user.student-1" },
+      "quiz": { "$ref": "quiz.cpp" }
+    },
+    {
+      "_ref": "attempt-8",
+      "answers": {
+        "q1": "A",
+        "q2": "B",
+        "q3": "D"
+      },
+      "score": 30,
+      "totalPoints": 30,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-25T11:00:00.000Z",
+      "submittedAt": "2026-08-25T11:08:00.000Z",
+      "timeTaken": 480,
+      "student": { "$ref": "user.student-3" },
+      "quiz": { "$ref": "quiz.string-algorithms" }
+    },
+    {
+      "_ref": "attempt-9",
+      "answers": {
+        "q1": "A",
+        "q2": "A"
+      },
+      "score": 10,
+      "totalPoints": 20,
+      "percentage": 50,
+      "passed": false,
+      "startedAt": "2026-08-27T18:00:00.000Z",
+      "submittedAt": "2026-08-27T18:06:00.000Z",
+      "timeTaken": 390,
+      "student": { "$ref": "user.student-demo" },
+      "quiz": { "$ref": "quiz.geometry" }
+    },
+    {
+      "_ref": "attempt-10",
+      "answers": {
+        "q1": "A"
+      },
+      "score": 10,
+      "totalPoints": 10,
+      "percentage": 100,
+      "passed": true,
+      "startedAt": "2026-08-27T17:40:00.000Z",
+      "submittedAt": "2026-08-27T17:44:00.000Z",
+      "timeTaken": 240,
+      "student": { "$ref": "user.student-6" },
+      "quiz": { "$ref": "quiz.bootcamp" }
+    }
+  ]
+}

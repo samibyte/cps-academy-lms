@@ -98,9 +98,16 @@ export async function getLesson(lessonId: string, token: string) {
  * Strapi's `is-owner-or-admin` policy ensures only the student's own records
  * are returned.
  */
-export async function getLessonProgresses(courseId: string, token: string) {
+export async function getLessonProgresses(
+  courseId: string,
+  token: string,
+  studentDocId?: string,
+) {
+  const studentFilter = studentDocId
+    ? `&filters[student][documentId][$eq]=${studentDocId}`
+    : "";
   return apiClient<StrapiListResponse<LessonProgress>>(
-    `/api/lesson-progresses?filters[course][documentId][$eq]=${courseId}&populate[lesson][fields][0]=id&populate[lesson][fields][1]=documentId&populate[lesson][fields][2]=order&pagination[pageSize]=200`,
+    `/api/lesson-progresses?filters[course][documentId][$eq]=${courseId}${studentFilter}&populate[lesson][fields][0]=id&populate[lesson][fields][1]=documentId&populate[lesson][fields][2]=order&pagination[pageSize]=200`,
     { token },
   );
 }
@@ -135,6 +142,7 @@ export async function getQuizForCourse(
 export async function buildProgressMap(
   enrollments: { course?: { documentId: string } | null }[],
   token: string,
+  studentDocId?: string,
 ): Promise<Record<string, number>> {
   const progressMap: Record<string, number> = {};
   await Promise.all(
@@ -142,7 +150,11 @@ export async function buildProgressMap(
       const courseDocId = enrollment.course?.documentId;
       if (!courseDocId) return;
       try {
-        const progressRes = await getLessonProgresses(courseDocId, token);
+        const progressRes = await getLessonProgresses(
+          courseDocId,
+          token,
+          studentDocId,
+        );
         progressMap[courseDocId] = progressRes.data.filter((p) => p.completed).length;
       } catch {
         progressMap[courseDocId] = 0;
@@ -188,9 +200,16 @@ export async function touchEnrollmentLastAccessed(
 
 // Quiz attempts
 
-export async function getMyQuizAttempts(quizId: string, token: string) {
+export async function getMyQuizAttempts(
+  quizId: string,
+  token: string,
+  studentDocId?: string,
+) {
+  const studentFilter = studentDocId
+    ? `&filters[student][documentId][$eq]=${studentDocId}`
+    : "";
   return apiClient<StrapiListResponse<QuizAttempt>>(
-    `/api/quiz-attempts?filters[quiz][documentId][$eq]=${quizId}&sort[0]=createdAt:desc&pagination[pageSize]=10`,
+    `/api/quiz-attempts?filters[quiz][documentId][$eq]=${quizId}${studentFilter}&sort[0]=createdAt:desc&pagination[pageSize]=10`,
     { token },
   );
 }

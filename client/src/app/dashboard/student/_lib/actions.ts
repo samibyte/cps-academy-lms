@@ -83,7 +83,7 @@ async function checkAndMarkEnrollmentCompleteIfNoQuiz(
         lesson?: { documentId: string } | null;
       }>;
     }>(
-      `/api/lesson-progresses?filters[course][documentId][$eq]=${courseDocId}&pagination[pageSize]=200&populate[lesson][fields][0]=documentId`,
+      `/api/lesson-progresses?filters[course][documentId][$eq]=${courseDocId}&filters[student][documentId][$eq]=${studentDocId}&pagination[pageSize]=200&populate[lesson][fields][0]=documentId`,
       { token },
     );
     const completedDocIds = new Set(
@@ -133,7 +133,7 @@ export async function markLessonCompleteAction(
     const token = await getToken();
 
     const existing = await apiClient<{ data: LessonProgress[] }>(
-      `/api/lesson-progresses?filters[lesson][documentId][$eq]=${lessonDocId}&filters[course][documentId][$eq]=${courseDocId}&pagination[pageSize]=1`,
+      `/api/lesson-progresses?filters[lesson][documentId][$eq]=${lessonDocId}&filters[course][documentId][$eq]=${courseDocId}&filters[student][documentId][$eq]=${studentDocId}&pagination[pageSize]=1`,
       { token },
     );
 
@@ -258,6 +258,7 @@ export async function submitQuizAttemptAction(
       data: Array<{ passed: boolean }>;
     }>(
       `/api/quiz-attempts?filters[quiz][documentId][$eq]=${payload.quizDocId}` +
+        `&filters[student][documentId][$eq]=${payload.studentDocId}` +
         `&fields[0]=passed&pagination[pageSize]=50`,
       { token },
     );

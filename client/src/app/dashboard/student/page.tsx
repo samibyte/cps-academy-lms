@@ -49,7 +49,7 @@ export default async function StudentDashboardOverview() {
     console.error("[overview] Failed to fetch stats data", err);
   }
 
-  const progressMap = await buildProgressMap(enrollments, token);
+  const progressMap = await buildProgressMap(enrollments, token, me.documentId);
 
   const enrolledCount = enrollments.length;
   const completedLessonsCount = progresses.filter((p) => p.completed).length;

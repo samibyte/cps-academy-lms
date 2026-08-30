@@ -29,7 +29,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   // Fetch student progress for this course
-  const progressRes = await getLessonProgresses(courseId, token);
+  const progressRes = await getLessonProgresses(courseId, token, me.documentId);
   const progressList = progressRes.data;
 
   const completedLessonDocIds = new Set(

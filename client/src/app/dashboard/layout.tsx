@@ -25,14 +25,14 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex bg-background h-screen w-screen overflow-hidden">
+      <div className="flex min-h-screen w-full bg-background overflow-x-hidden">
         <DashboardSidebar
           role={userInfo.role}
           userName={userInfo.name}
           avatar={userInfo.avatar}
           logoutAction={logoutAction}
         />
-        <SidebarInset className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <SidebarInset className="flex min-w-0 flex-1 flex-col overflow-y-auto">
           {children}
         </SidebarInset>
       </div>

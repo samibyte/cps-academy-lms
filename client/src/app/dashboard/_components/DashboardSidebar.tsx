@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   ChevronRight,
   User,
+  Users,
   FileText,
   PlusCircle,
 } from "lucide-react";
@@ -28,7 +29,7 @@ import {
 import Logo from "@/components/shared/ui/logo";
 import type { StrapiRole } from "@/services/auth.service";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 interface DashboardSidebarProps {
   role: StrapiRole;
@@ -43,28 +44,49 @@ type NavLink = {
   icon: React.ComponentType<{ className?: string }>;
 };
 
-// ─── Role-based nav configs ───────────────────────────────────────────────────
+// Role-based nav configs
 
 const STUDENT_LINKS: NavLink[] = [
   { href: "/dashboard/student", label: "ওভারভিউ", icon: LayoutDashboard },
-  { href: "/dashboard/student/my-courses", label: "আমার কোর্সসমূহ", icon: BookOpen },
+  {
+    href: "/dashboard/student/my-courses",
+    label: "আমার কোর্সসমূহ",
+    icon: BookOpen,
+  },
 ];
 
 const INSTRUCTOR_LINKS: NavLink[] = [
   { href: "/dashboard/instructor", label: "ওভারভিউ", icon: LayoutDashboard },
-  { href: "/dashboard/instructor/courses", label: "আমার কোর্সসমূহ", icon: BookOpen },
-  { href: "/dashboard/instructor/courses/new", label: "কোর্স তৈরি", icon: PlusCircle },
+  {
+    href: "/dashboard/instructor/courses",
+    label: "আমার কোর্সসমূহ",
+    icon: BookOpen,
+  },
+  {
+    href: "/dashboard/instructor/courses/new",
+    label: "কোর্স তৈরি",
+    icon: PlusCircle,
+  },
 ];
 
 const CONTENT_MANAGER_LINKS: NavLink[] = [
-  { href: "/dashboard/content-manager", label: "ওভারভিউ", icon: LayoutDashboard },
-  { href: "/dashboard/content-manager/courses", label: "সব কোর্সসমূহ", icon: BookOpen },
+  {
+    href: "/dashboard/content-manager",
+    label: "ওভারভিউ",
+    icon: LayoutDashboard,
+  },
+  {
+    href: "/dashboard/content-manager/courses",
+    label: "সব কোর্সসমূহ",
+    icon: BookOpen,
+  },
   { href: "/dashboard/content-manager/blog", label: "ব্লগ", icon: FileText },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
   { href: "/dashboard/admin", label: "ওভারভিউ", icon: LayoutDashboard },
   { href: "/dashboard/admin/courses", label: "সব কোর্সসমূহ", icon: BookOpen },
+  { href: "/dashboard/admin/users", label: "ব্যবহারকারী", icon: Users },
   { href: "/dashboard/admin/blog", label: "ব্লগ", icon: FileText },
 ];
 
@@ -86,25 +108,35 @@ function getNavLinks(role: StrapiRole): NavLink[] {
 /** Prefix of the role's root dashboard path — used for active-link heuristics */
 function getRoleRootPath(role: StrapiRole): string {
   switch (role) {
-    case "Student":         return "/dashboard/student";
-    case "Instructor":      return "/dashboard/instructor";
-    case "Content Manager": return "/dashboard/content-manager";
-    case "Admin":           return "/dashboard/admin";
-    default:                return "/dashboard";
+    case "Student":
+      return "/dashboard/student";
+    case "Instructor":
+      return "/dashboard/instructor";
+    case "Content Manager":
+      return "/dashboard/content-manager";
+    case "Admin":
+      return "/dashboard/admin";
+    default:
+      return "/dashboard";
   }
 }
 
-// ─── Role badge label + icon ──────────────────────────────────────────────────
+// Role badge label + icon
 
 function RoleTag({ role }: { role: StrapiRole }) {
   const isAdmin = role === "Admin";
   const getRoleLabel = (r: StrapiRole) => {
     switch (r) {
-      case "Student": return "শিক্ষার্থী";
-      case "Instructor": return "ইনস্ট্রাক্টর";
-      case "Content Manager": return "কন্টেন্ট ম্যানেজার";
-      case "Admin": return "অ্যাডমিন";
-      default: return r;
+      case "Student":
+        return "শিক্ষার্থী";
+      case "Instructor":
+        return "ইনস্ট্রাক্টর";
+      case "Content Manager":
+        return "কন্টেন্ট ম্যানেজার";
+      case "Admin":
+        return "অ্যাডমিন";
+      default:
+        return r;
     }
   };
 
@@ -116,7 +148,7 @@ function RoleTag({ role }: { role: StrapiRole }) {
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+//Main component
 
 export default function DashboardSidebar({
   role,
@@ -127,12 +159,16 @@ export default function DashboardSidebar({
   const pathname = usePathname();
   const links = getNavLinks(role);
   const roleRoot = getRoleRootPath(role);
+  const exactActiveHref = links.find((link) => link.href === pathname)?.href;
 
   return (
     <Sidebar className="border-r border-border/40 bg-card/60 backdrop-blur-xl">
       {/* Header — Logo */}
       <SidebarHeader className="flex h-16 shrink-0 flex-row items-center px-4 border-b border-border/40">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link
+          href="/"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
           <Logo />
         </Link>
       </SidebarHeader>
@@ -153,7 +189,7 @@ export default function DashboardSidebar({
                 const isPrefix =
                   link.href !== roleRoot &&
                   pathname.startsWith(link.href + "/");
-                const isActive = isExact || isPrefix;
+                const isActive = isExact || (!exactActiveHref && isPrefix);
 
                 return (
                   <SidebarMenuItem key={link.href}>
@@ -163,8 +199,8 @@ export default function DashboardSidebar({
                       className={cn(
                         "group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 h-10",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary/90 hover:text-primary-foreground"
-                          : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+                          ? "bg-primary text-primary-foreground data-active:bg-primary data-active:text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary hover:text-primary-foreground"
+                          : "text-muted-foreground  hover:shadow-sm hover:shadow-primary/20",
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -178,7 +214,9 @@ export default function DashboardSidebar({
                         />
                         <span className="font-medium">{link.label}</span>
                       </div>
-                      {isActive && <ChevronRight className="size-3.5 opacity-60" />}
+                      {isActive && (
+                        <ChevronRight className="size-3.5 opacity-60" />
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
