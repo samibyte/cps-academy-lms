@@ -1,9 +1,8 @@
-import { apiClient } from "@/lib/apiClient";
-
 export type CourseLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 
 export interface FeaturedCourse {
   key: string;
+  slug: string;
   code: string;
   title: string;
   description: string;
@@ -14,7 +13,7 @@ export interface FeaturedCourse {
   price?: number;
 }
 
-interface StrapiCourse {
+export interface StrapiCourse {
   documentId: string;
   slug: string;
   title: string;
@@ -26,19 +25,20 @@ interface StrapiCourse {
   lessons?: { duration: number | null }[] | null;
 }
 
-interface FeaturedCoursesResponse {
+export interface FeaturedCoursesResponse {
   data: StrapiCourse[];
 }
 
-const LEVEL_MAP: Record<StrapiCourse["level"], CourseLevel> = {
+export const LEVEL_MAP: Record<StrapiCourse["level"], CourseLevel> = {
   Beginner: "BEGINNER",
   Intermediate: "INTERMEDIATE",
   Advanced: "ADVANCED",
 };
 
-function mapCourse(course: StrapiCourse, index: number): FeaturedCourse {
+export function mapCourse(course: StrapiCourse, index: number): FeaturedCourse {
   return {
     key: course.documentId,
+    slug: course.slug,
     code: `CPS-${String(index + 1).padStart(2, "0")}`,
     title: course.title,
     description: course.shortDescription ?? "",
@@ -53,6 +53,7 @@ function mapCourse(course: StrapiCourse, index: number): FeaturedCourse {
 export const FALLBACK_FEATURED_COURSES: FeaturedCourse[] = [
   {
     key: "fallback-cps-101",
+    slug: "c-language-first-run",
     code: "CPS-101",
     title: "সি ল্যাঙ্গুয়েজ: প্রথম রান",
     description:
@@ -64,6 +65,7 @@ export const FALLBACK_FEATURED_COURSES: FeaturedCourse[] = [
   },
   {
     key: "fallback-cps-202",
+    slug: "data-structure-dive",
     code: "CPS-202",
     title: "ডেটা স্ট্রাকচার ডেবে",
     description:
@@ -76,6 +78,7 @@ export const FALLBACK_FEATURED_COURSES: FeaturedCourse[] = [
   },
   {
     key: "fallback-cps-303",
+    slug: "algorithm-graph-strategy",
     code: "CPS-303",
     title: "অ্যালগরিদম ও গ্রাফ স্ট্র্যাটেজি",
     description:
@@ -88,6 +91,7 @@ export const FALLBACK_FEATURED_COURSES: FeaturedCourse[] = [
   },
   {
     key: "fallback-cps-401",
+    slug: "cp-rating-bootcamp",
     code: "CPS-401",
     title: "CP রেটিং বুটক্যাম্প",
     description:
@@ -100,17 +104,21 @@ export const FALLBACK_FEATURED_COURSES: FeaturedCourse[] = [
   },
 ];
 
-export async function getFeaturedCourses(): Promise<FeaturedCourse[]> {
-  try {
-    const res = await apiClient<FeaturedCoursesResponse>(
-      "/api/public/featured-courses",
-    );
-    const data = Array.isArray(res.data) ? res.data : [];
-    if (data.length > 0) {
-      return data.map(mapCourse).slice(0, 4);
-    }
-  } catch (err) {
-    console.error("[courses] Failed to fetch featured courses", err);
-  }
-  return FALLBACK_FEATURED_COURSES;
+export interface PaginatedCoursesResponse {
+  data: FeaturedCourse[];
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export interface GetCoursesQuery {
+  search?: string;
+  level?: CourseLevel;
+  page?: number;
+  pageSize?: number;
 }

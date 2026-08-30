@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
@@ -79,17 +79,30 @@ const TONES: Record<TermTone, string> = {
 };
 
 const OPACITY: Record<TermTone, number> = {
-  ac: 0.16,
-  wa: 0.14,
-  tle: 0.14,
-  muted: 0.09,
+  ac: 0.72,
+  wa: 0.68,
+  tle: 0.68,
+  muted: 0.42,
 };
 
 export function FloatingTerms() {
+  const { scrollYProgress } = useScroll();
+  const groupY = useTransform(
+    scrollYProgress,
+    [0, 0.12, 0.35, 1],
+    [0, -60, -180, -260],
+  );
+  const groupOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.08, 0.22, 0.5, 1],
+    [1, 0.96, 0.7, 0.2, 0],
+  );
+
   return (
-    <div
+    <motion.div
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+      className="pointer-events-none z-40 absolute inset-0 overflow-hidden select-none"
+      style={{ y: groupY, opacity: groupOpacity }}
     >
       {TERMS.map((term) => (
         <motion.span
@@ -98,18 +111,23 @@ export function FloatingTerms() {
             "absolute font-mono text-[11px] tracking-wide sm:text-sm",
             TONES[term.tone],
           )}
-          style={{ ...term.style, opacity: OPACITY[term.tone] }}
-          animate={{ y: [0, -14, 0], x: [0, 6, 0] }}
+          style={{
+            ...term.style,
+            opacity: OPACITY[term.tone],
+            filter: "drop-shadow(0 0 12px rgba(148, 163, 184, 0.28))",
+          }}
+          animate={{ y: [0, -8, 0, 4, 0], x: [0, 3, 0, -2, 0] }}
           transition={{
             duration: term.duration,
             delay: term.delay,
             repeat: Infinity,
             ease: "easeInOut",
+            repeatType: "mirror",
           }}
         >
           {term.label}
         </motion.span>
       ))}
-    </div>
+    </motion.div>
   );
 }
