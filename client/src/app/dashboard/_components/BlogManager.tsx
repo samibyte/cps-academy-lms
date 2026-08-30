@@ -3,66 +3,34 @@
 import { useTransition, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { FormDialog } from "@/components/shared/FormDialog";
 import { DataTable } from "@/components/shared/DataTable";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Globe, FileText } from "lucide-react";
+import { Plus, Trash2, Globe, FileText, Pencil } from "lucide-react";
 import type { BlogPost } from "@/app/dashboard/_lib/types";
 import {
-  createBlogPostAction,
   deleteBlogPostAction,
   publishBlogPostAction,
 } from "@/app/dashboard/_lib/actions";
-
-// ── Schema ────────────────────────────────────────────────────────────────────
-
-const blogSchema = z.object({
-  title: z.string().min(3, "Title required (min 3 chars)"),
-  slug: z
-    .string()
-    .min(3, "Slug required")
-    .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, hyphens only"),
-  excerpt: z.string().min(10, "Excerpt required (min 10 chars)"),
-  publishStatus: z.enum(["draft", "publish"]).default("draft"),
-});
-
-type BlogFormValues = z.infer<typeof blogSchema>;
+import { BlogFormDialog } from "./BlogFormDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface BlogManagerProps {
-  posts: BlogPost[];
-  authorDocId: string;
-  token?: string;
+  publishedPosts: BlogPost[];
+  draftPosts: BlogPost[];
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function BlogManager({ posts, authorDocId }: BlogManagerProps) {
+export function BlogManager({ publishedPosts, draftPosts }: BlogManagerProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const refresh = () => startTransition(() => router.refresh());
-
-  const handleCreate = async (values: BlogFormValues) => {
-    await createBlogPostAction({
-      title: values.title,
-      slug: values.slug,
-      excerpt: values.excerpt,
-      author: authorDocId,
-      body: [{ type: "paragraph", children: [{ type: "text", text: "Start writing…" }] }],
-      ...(values.publishStatus === "publish" && {
-        publishedAt: new Date().toISOString(),
-      }),
-    });
-    refresh();
-  };
 
   const handleTogglePublish = async (post: BlogPost) => {
     setTogglingId(post.documentId);
@@ -89,7 +57,7 @@ export function BlogManager({ posts, authorDocId }: BlogManagerProps) {
         <div className="flex flex-col gap-0.5">
           <span className="font-semibold">{row.getValue("title")}</span>
           <span className="text-xs font-mono text-muted-foreground">
-            {row.original.slug}
+            /{row.original.slug}
           </span>
         </div>
       ),
@@ -103,6 +71,26 @@ export function BlogManager({ posts, authorDocId }: BlogManagerProps) {
           return <span className="text-xs text-muted-foreground">--</span>;
         return (
           <span className="text-sm">{author.fullName || author.username}</span>
+        );
+      },
+    },
+    {
+      id: "cover",
+      header: "কভার ইমেজ",
+      cell: ({ row }) => {
+        const cover = row.original.coverImage;
+        if (!cover || cover.length === 0)
+          return <span className="text-xs text-muted-foreground">--</span>;
+        const url = cover[0].url.startsWith("http")
+          ? cover[0].url
+          : `${process.env.API_URL || ""}${cover[0].url}`;
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt="cover"
+            className="h-9 w-16 rounded object-cover border border-border/40"
+          />
         );
       },
     },
@@ -163,6 +151,20 @@ export function BlogManager({ posts, authorDocId }: BlogManagerProps) {
               )}
             </Button>
 
+            {/* Edit */}
+            <BlogFormDialog
+              post={post}
+              trigger={
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  className="text-primary hover:bg-primary/10 hover:text-primary border-primary/20"
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              }
+            />
+
             {/* Delete */}
             <ConfirmDialog
               title="পোস্ট ডিলিট করবেন?"
@@ -187,110 +189,48 @@ export function BlogManager({ posts, authorDocId }: BlogManagerProps) {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold">ব্লগ পোস্টসমূহ</h2>
 
-        <FormDialog
-          title="নতুন পোস্ট তৈরি করুন"
-          description="বেসিক তথ্য দিন। পরে Strapi Admin থেকে পূর্ণাঙ্গ কনটেন্ট এডিট করতে পারবেন।"
+        {/* Create Blog Post */}
+        <BlogFormDialog
           trigger={
             <Button size="sm" className="gap-1.5">
               <Plus className="size-4" /> নতুন পোস্ট
             </Button>
           }
-          schema={blogSchema}
-          defaultValues={{
-            title: "",
-            slug: "",
-            excerpt: "",
-            publishStatus: "draft",
-          }}
-          onSubmit={handleCreate}
-          submitText="তৈরি করুন"
-          cancelText="বাতিল"
-        >
-          {(form) => (
-            <div className="grid gap-4 py-2">
-              {/* Title */}
-              <div className="grid gap-1.5">
-                <label className="text-sm font-medium">
-                  শিরোনাম <span className="text-destructive">*</span>
-                </label>
-                <Input placeholder="পোস্টের টাইটেল" {...form.register("title")} />
-                {form.formState.errors.title && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.title.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Slug */}
-              <div className="grid gap-1.5">
-                <label className="text-sm font-medium">
-                  স্লাগ <span className="text-destructive">*</span>
-                </label>
-                <Input placeholder="post-slug-here" {...form.register("slug")} />
-                {form.formState.errors.slug && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.slug.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Excerpt */}
-              <div className="grid gap-1.5">
-                <label className="text-sm font-medium">
-                  সংক্ষিপ্ত বিবরণ <span className="text-destructive">*</span>
-                </label>
-                <Textarea
-                  rows={3}
-                  placeholder="পোস্টের মূল বিষয়..."
-                  {...form.register("excerpt")}
-                />
-                {form.formState.errors.excerpt && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.excerpt.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Publish status */}
-              <div className="grid gap-1.5">
-                <label className="text-sm font-medium">স্ট্যাটাস</label>
-                <div className="flex gap-2">
-                  {(["draft", "publish"] as const).map((status) => {
-                    const active = form.watch("publishStatus") === status;
-                    return (
-                      <button
-                        key={status}
-                        type="button"
-                        onClick={() => form.setValue("publishStatus", status)}
-                        className={`flex-1 py-1.5 rounded-md border text-sm font-medium transition-colors ${
-                          active
-                            ? status === "publish"
-                              ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/40"
-                              : "bg-amber-500/10 text-amber-700 border-amber-500/40"
-                            : "border-border text-muted-foreground hover:bg-accent"
-                        }`}
-                      >
-                        {status === "draft" ? "📝 Draft" : "🌐 Publish"}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-        </FormDialog>
+        />
       </div>
 
-      <DataTable
-        columns={columns}
-        data={posts}
-        searchKey="title"
-        searchPlaceholder="পোস্ট খুঁজুন..."
-      />
+      <Tabs defaultValue="published" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="published" className="gap-1.5">
+            🌐 প্রকাশিত ({publishedPosts.length})
+          </TabsTrigger>
+          <TabsTrigger value="drafts" className="gap-1.5">
+            📝 ড্রাফট ({draftPosts.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="published" className="border-0 p-0">
+          <DataTable
+            columns={columns}
+            data={publishedPosts}
+            searchKey="title"
+            searchPlaceholder="প্রকাশিত পোস্ট খুঁজুন..."
+          />
+        </TabsContent>
+
+        <TabsContent value="drafts" className="border-0 p-0">
+          <DataTable
+            columns={columns}
+            data={draftPosts}
+            searchKey="title"
+            searchPlaceholder="ড্রাফট পোস্ট খুঁজুন..."
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

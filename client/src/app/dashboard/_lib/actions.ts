@@ -8,6 +8,7 @@ import {
   deleteBlogPost,
   createBlogPost,
   updateBlogPost,
+  publishBlogPost,
   createQuiz,
   updateQuiz,
   createLesson,
@@ -19,6 +20,7 @@ import {
   adminToggleBlockUser,
 } from "./api";
 import { courseSchema } from "@/zod/course.validation";
+import { blogSchema } from "@/zod/blog.validation";
 
 export type CourseActionResult = { success: true } | { success: false; error: string };
 
@@ -214,9 +216,114 @@ function jsonOr(key: string, formData: FormData): unknown {
 
 // BLOG POSTS
 
-export async function createBlogPostAction(values: Record<string, unknown>) {
+export async function createBlogPostAction(formData: FormData): Promise<CourseActionResult> {
+  const { token, me } = await requireAuth(["Admin", "Content Manager"]);
+  const authorDocId = me.documentId;
+
+  try {
+    const title = formData.get("title");
+    const slug = formData.get("slug");
+    const excerpt = formData.get("excerpt");
+    const bodyText = formData.get("body");
+    const publishStatus = formData.get("publishStatus");
+    const coverImageFile = formData.get("coverImage") as File | null;
+
+    const validated = blogSchema.parse({
+      title,
+      slug,
+      excerpt,
+      body: bodyText,
+      publishStatus,
+    });
+
+    let coverImageId: string | null = null;
+    if (coverImageFile && coverImageFile.size > 0) {
+      const uploadRes = await uploadCourseThumbnail(coverImageFile, token);
+      coverImageId = uploadRes.data.documentId;
+    }
+
+    const bodyBlocks = textToBlocks(validated.body);
+
+    const data: Record<string, unknown> = {
+      title: validated.title,
+      slug: validated.slug,
+      excerpt: validated.excerpt,
+      body: bodyBlocks,
+      author: authorDocId,
+    };
+
+    if (coverImageId) {
+      data.coverImage = [coverImageId];
+    }
+
+    // Strapi v5 ignores publishedAt in POST body — always creates as draft.
+    // We must call publish separately if the user wants it published.
+    const created = (await createBlogPost(data, token)) as {
+      data?: { documentId?: string };
+    };
+    const newId = created.data?.documentId;
+    if (validated.publishStatus === "publish" && newId) {
+      await publishBlogPost(newId, true, token);
+    }
+    return { success: true };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to create blog post";
+    return { success: false, error: message };
+  }
+}
+
+export async function updateBlogPostAction(
+  id: string,
+  formData: FormData,
+): Promise<CourseActionResult> {
   const { token } = await requireAuth(["Admin", "Content Manager"]);
-  return createBlogPost(values, token);
+
+  try {
+    const title = formData.get("title");
+    const slug = formData.get("slug");
+    const excerpt = formData.get("excerpt");
+    const bodyText = formData.get("body");
+    const publishStatus = formData.get("publishStatus");
+    const coverImageFile = formData.get("coverImage") as File | null;
+
+    const validated = blogSchema.parse({
+      title,
+      slug,
+      excerpt,
+      body: bodyText,
+      publishStatus,
+    });
+
+    let coverImageId: string | null = null;
+    if (coverImageFile && coverImageFile.size > 0) {
+      const uploadRes = await uploadCourseThumbnail(coverImageFile, token);
+      coverImageId = uploadRes.data.documentId;
+    }
+
+    const bodyBlocks = textToBlocks(validated.body);
+
+    const data: Record<string, unknown> = {
+      title: validated.title,
+      slug: validated.slug,
+      excerpt: validated.excerpt,
+      body: bodyBlocks,
+    };
+
+    if (coverImageId) {
+      data.coverImage = [coverImageId];
+    }
+
+    // Strapi v5 ignores publishedAt in PUT body — always updates the draft.
+    // We must toggle publish state separately via the document service endpoint.
+    await updateBlogPost(id, data, token);
+    await publishBlogPost(id, validated.publishStatus === "publish", token);
+    return { success: true };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to update blog post";
+    return { success: false, error: message };
+  }
 }
 
 export async function deleteBlogPostAction(id: string) {
@@ -226,7 +333,7 @@ export async function deleteBlogPostAction(id: string) {
 
 export async function publishBlogPostAction(id: string, publish: boolean) {
   const { token } = await requireAuth(["Admin", "Content Manager"]);
-  return updateBlogPost(id, { publishedAt: publish ? new Date().toISOString() : null }, token);
+  return publishBlogPost(id, publish, token);
 }
 // QUIZZES
 

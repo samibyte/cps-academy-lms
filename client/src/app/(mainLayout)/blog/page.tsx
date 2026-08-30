@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { apiClient } from "@/lib/apiClient";
 import { Section, SectionHeader } from "../_components/Section";
+import Image from "next/image";
 
 interface BlogAuthor {
   username?: string;
@@ -108,7 +109,7 @@ export default async function BlogPage() {
                 >
                   {imageUrl ? (
                     <div className="relative h-52 overflow-hidden border-b border-border/60">
-                      <img
+                      <Image
                         src={imageUrl}
                         alt={post.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

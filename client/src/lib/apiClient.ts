@@ -76,7 +76,8 @@ export async function apiClient<T>(
                 } catch (e) {
                   // Ignore "Cookies can only be modified in a Server Action or Route Handler" error
                 }
-                return retryRes.json() as Promise<T>;
+                const retryText = await retryRes.text();
+                return (retryText ? JSON.parse(retryText) : {}) as T;
               }
             }
           }
@@ -92,5 +93,6 @@ export async function apiClient<T>(
     throw new ApiError(res.status, message);
   }
 
-  return res.json() as Promise<T>;
+  const text = await res.text();
+  return (text ? JSON.parse(text) : {}) as T;
 }

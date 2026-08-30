@@ -9,9 +9,16 @@ export const metadata: Metadata = {
 };
 
 export default async function CMBlogPage() {
-  const { token, me } = await requireAuth(["Content Manager", "Admin"]);
-  const postsRes = await getBlogPosts(token);
-  const posts = postsRes.data || [];
+  const { token } = await requireAuth(["Content Manager", "Admin"]);
+  const [publishedRes, draftsRes] = await Promise.all([
+    getBlogPosts(token, "published"),
+    getBlogPosts(token, "draft"),
+  ]);
+
+  const publishedPosts = publishedRes.data || [];
+  const draftPosts = (draftsRes.data || []).filter(
+    (draftPost) => !publishedPosts.some((pubPost) => pubPost.documentId === draftPost.documentId)
+  );
 
   return (
     <DashboardShell
@@ -22,7 +29,10 @@ export default async function CMBlogPage() {
         { label: "ব্লগ" },
       ]}
     >
-      <BlogManager posts={posts} authorDocId={me.documentId} token={token} />
+      <BlogManager
+        publishedPosts={publishedPosts}
+        draftPosts={draftPosts}
+      />
     </DashboardShell>
   );
 }

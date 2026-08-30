@@ -9,8 +9,16 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminBlogPage() {
-  const { token, me } = await requireAuth(["Admin"]);
-  const postsRes = await getBlogPosts(token);
+  const { token } = await requireAuth(["Admin"]);
+  const [publishedRes, draftsRes] = await Promise.all([
+    getBlogPosts(token, "published"),
+    getBlogPosts(token, "draft"),
+  ]);
+
+  const publishedPosts = publishedRes.data || [];
+  const draftPosts = (draftsRes.data || []).filter(
+    (draftPost) => !publishedPosts.some((pubPost) => pubPost.documentId === draftPost.documentId)
+  );
 
   return (
     <DashboardShell
@@ -18,7 +26,10 @@ export default async function AdminBlogPage() {
       description="প্ল্যাটফর্মের সব ব্লগ পোস্ট ম্যানেজ করুন"
       breadcrumbs={[{ label: "অ্যাডমিন", href: "/dashboard/admin" }, { label: "ব্লগ" }]}
     >
-      <BlogManager posts={postsRes.data || []} authorDocId={me.documentId} token={token} />
+      <BlogManager
+        publishedPosts={publishedPosts}
+        draftPosts={draftPosts}
+      />
     </DashboardShell>
   );
 }

@@ -224,9 +224,9 @@ export async function getStudentProgressForCourse(
 
 // BLOG POSTS
 
-export async function getBlogPosts(token: string) {
+export async function getBlogPosts(token: string, status: "published" | "draft" = "published") {
   return apiClient<StrapiListResponse<BlogPost>>(
-    `/api/blog-posts?populate[author][fields][0]=username&populate[author][fields][1]=fullName&sort[0]=createdAt:desc&pagination[pageSize]=100`,
+    `/api/blog-posts?populate[author][fields][0]=username&populate[author][fields][1]=fullName&populate[coverImage][fields][0]=url&populate[coverImage][fields][1]=name&sort[0]=createdAt:desc&pagination[pageSize]=100&status=${status}`,
     { token },
   );
 }
@@ -249,6 +249,23 @@ export async function updateBlogPost(
     token,
     body: { data },
   });
+}
+
+export async function publishBlogPost(
+  id: string,
+  publish: boolean,
+  token: string,
+) {
+  // Uses a custom admin endpoint that calls Strapi's document service
+  // publish/unpublish internally, avoiding RBAC issues with the built-in routes.
+  return apiClient<{ data: { published: boolean } }>(
+    `/api/admin/blog-posts/${id}/toggle-publish`,
+    {
+      method: "POST",
+      token,
+      body: { publish },
+    },
+  );
 }
 
 export async function deleteBlogPost(id: string, token: string) {

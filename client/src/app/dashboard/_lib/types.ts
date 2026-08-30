@@ -191,6 +191,12 @@ export interface BlogPost {
     username: string;
     fullName: string | null;
   };
+  coverImage?: Array<{
+    id: number;
+    documentId: string;
+    name: string;
+    url: string;
+  }> | null;
 }
 
 export interface AdminUser {

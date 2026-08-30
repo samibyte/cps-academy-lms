@@ -95,17 +95,16 @@ export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
         ];
       }
 
-      const pagination = {
-        page: Number(page) || 1,
-        pageSize: Number(pageSize) || 8,
-      };
+      const currentPage = Number(page) || 1;
+      const currentPageSize = Number(pageSize) || 8;
 
       const [data, total] = await Promise.all([
         strapi.documents("api::course.course").findMany({
           filters,
           populate: ["thumbnail", "instructor", "lessons"],
           sort: [{ createdAt: "desc" }],
-          pagination,
+          start: (currentPage - 1) * currentPageSize,
+          limit: currentPageSize,
         }),
         strapi.documents("api::course.course").count({ filters }),
       ]);
@@ -114,9 +113,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): PublicController => ({
         data,
         meta: {
           pagination: {
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            pageCount: Math.ceil(total / pagination.pageSize),
+            page: currentPage,
+            pageSize: currentPageSize,
+            pageCount: Math.ceil(total / currentPageSize),
             total,
           },
         },

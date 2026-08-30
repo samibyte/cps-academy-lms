@@ -63,5 +63,14 @@ export default {
         middlewares: [],
       },
     },
+    {
+      method: 'POST',
+      path: '/admin/blog-posts/:documentId/toggle-publish',
+      handler: 'admin.toggleBlogPublish',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

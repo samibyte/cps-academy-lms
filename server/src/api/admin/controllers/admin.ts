@@ -62,6 +62,7 @@ interface AdminControllers {
   updateUserRole(ctx: Context & { params?: { documentId?: string }; request: any }): Promise<void>;
   toggleBlockUser(ctx: Context & { params?: { documentId?: string } }): Promise<void>;
   updateUser(ctx: Context & { params?: { documentId?: string }; request: any }): Promise<void>;
+  toggleBlogPublish(ctx: Context & { params?: { documentId?: string } }): Promise<void>;
 }
 
 const getUserRole = async (
@@ -455,6 +456,37 @@ export default ({ strapi }: { strapi: Core.Strapi }): AdminControllers => ({
           message: "Unable to upload thumbnail.",
         },
       };
+    }
+  },
+
+  async toggleBlogPublish(
+    ctx: Context & { params?: { documentId?: string }; request: { body?: unknown } },
+  ): Promise<void> {
+    try {
+      const roleName = await resolveAllowedUser(ctx, strapi, [
+        "Admin",
+        "Content Manager",
+      ]);
+      if (!roleName) return;
+
+      const documentId = ctx.params?.documentId;
+      if (!documentId) return ctx.badRequest('Missing documentId');
+
+      const { publish } = (ctx.request.body as { publish?: boolean }) || {};
+      if (publish === undefined) return ctx.badRequest('Missing publish flag');
+
+      if (publish) {
+        await strapi.documents('api::blog-post.blog-post').publish({ documentId });
+      } else {
+        await strapi.documents('api::blog-post.blog-post').unpublish({ documentId });
+      }
+
+      ctx.body = { data: { published: publish } };
+    } catch (err) {
+      strapi.log.error('toggleBlogPublish failed');
+      strapi.log.error(err);
+      ctx.status = 500;
+      ctx.body = { error: { message: 'Unable to toggle blog post publish status.' } };
     }
   },
 });
