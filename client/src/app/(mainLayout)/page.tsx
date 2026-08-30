@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import { CtaBanner } from "./_components/CtaBanner";
 import { FaqSection } from "./_components/FaqSection";
 import { FeaturedCourses } from "./_components/FeaturedCourses";
 import { Hero } from "./_components/Hero";
 import { HowItWorks } from "./_components/HowItWorks";
 import { StatsBar } from "./_components/StatsBar";
+
+export const metadata: Metadata = {
+  title: "Home",
+};
 
 function Home() {
   return (

@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { requireAuth } from "../../../_lib/auth";
 import { getInstructors } from "../../../_lib/api";
 import DashboardShell from "../../../_components/DashboardShell";
 import { CreateCourseForm } from "../../../_components/CreateCourseForm";
+
+export const metadata: Metadata = {
+  title: "New Course",
+};
 
 export default async function AdminCreateCoursePage() {
   const { token } = await requireAuth(["Admin"]);

@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { getBlogPosts } from "@/app/dashboard/_lib/api";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
 import { BlogManager } from "@/app/dashboard/_components/BlogManager";
+
+export const metadata: Metadata = {
+  title: "Blog Manager",
+};
 
 export default async function CMBlogPage() {
   const { token, me } = await requireAuth(["Content Manager", "Admin"]);

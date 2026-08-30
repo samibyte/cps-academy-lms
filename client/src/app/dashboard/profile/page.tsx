@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -29,6 +30,10 @@ import {
   getAllMyQuizAttempts,
 } from "../student/_lib/api";
 import { LessonProgress, QuizAttempt } from "../student/_lib/types";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 export default async function ProfilePage() {
   const userInfo = await getUserInfo();

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { getAllCourses } from "@/app/dashboard/_lib/api";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
@@ -5,6 +6,10 @@ import { CourseListClient } from "@/app/dashboard/_components/CourseListClient";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Admin Courses",
+};
 
 export default async function AdminCoursesPage() {
   const { token } = await requireAuth(["Admin"]);

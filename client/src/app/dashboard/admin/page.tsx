@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { apiClient } from "@/lib/apiClient";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
@@ -12,6 +13,10 @@ interface StatsData {
     totalQuizAttempts: number;
   };
 }
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard",
+};
 
 export default async function AdminOverviewPage() {
   const { token } = await requireAuth(["Admin"]);

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, UserRound } from "lucide-react";
 
@@ -54,6 +55,10 @@ function normalizeImageUrl(url?: string | null) {
   if (!url) return null;
   return url.startsWith("http") ? url : `${process.env.API_URL ?? ""}${url}`;
 }
+
+export const metadata: Metadata = {
+  title: "Blog",
+};
 
 function getCoverImage(post: BlogPost) {
   const cover = Array.isArray(post.coverImage)

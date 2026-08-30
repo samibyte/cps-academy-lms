@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireStudentAuth } from "../_lib/auth";
@@ -11,6 +12,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import MyCoursesList from "./_components/MyCoursesList";
+
+export const metadata: Metadata = {
+  title: "My Courses",
+};
 
 export default async function MyCoursesPage() {
   let authData;

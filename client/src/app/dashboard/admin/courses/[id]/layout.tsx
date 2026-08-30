@@ -1,8 +1,25 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
 import { CourseTabsNav } from "@/app/dashboard/_components/CourseTabsNav";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { getCourseWithLessons } from "@/app/dashboard/_lib/api";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const { token } = await requireAuth(["Admin"]);
+
+  try {
+    const res = await getCourseWithLessons(id, token);
+    return { title: res.data.title };
+  } catch {
+    return { title: "Course" };
+  }
+}
 
 export default async function AdminCourseDetailLayout({
   children,

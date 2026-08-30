@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCourseWithLessons, getLesson, getLessonProgresses, touchEnrollmentLastAccessed } from "../../../../_lib/api";
 import { requireStudentAuth } from "../../../../_lib/auth";
 import LessonClientView from "./_components/LessonClientView";
+
+export const metadata: Metadata = {
+  title: "Lesson",
+};
 
 interface LessonPageProps {
   params: Promise<{ id: string; lessonId: string }>;

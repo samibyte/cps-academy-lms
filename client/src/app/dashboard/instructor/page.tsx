@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { getCoursesByInstructor } from "@/app/dashboard/_lib/api";
 import type { Course } from "@/app/dashboard/_lib/types";
@@ -7,6 +8,10 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Plus } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Instructor Dashboard",
+};
 
 export default async function InstructorOverviewPage() {
   const { token, me } = await requireAuth(["Instructor"]);

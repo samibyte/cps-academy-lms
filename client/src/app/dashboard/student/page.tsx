@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ProgressBar } from "@/components/shared/ProgressBar";
@@ -27,6 +28,10 @@ import {
 import { requireStudentAuth } from "./_lib/auth";
 import { OverviewCharts } from "./_components/OverviewCharts";
 import { Enrollment, LessonProgress, QuizAttempt } from "./_lib/types";
+
+export const metadata: Metadata = {
+  title: "Student Dashboard",
+};
 
 export default async function StudentDashboardOverview() {
   const { token, me } = await requireStudentAuth();

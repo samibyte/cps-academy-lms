@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   Card,
   CardContent,
@@ -9,6 +10,10 @@ import AuthBackgroundShape from "@/assets/svg/auth-background-shape";
 import RegisterForm from "@/app/auth/_components/register-form";
 import Logo from "@/components/shared/ui/logo";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Register",
+};
 
 interface RegisterParams {
   searchParams: Promise<{ redirect?: string }>;

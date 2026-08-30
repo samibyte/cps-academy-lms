@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
 import { getAdminUsers } from "@/app/dashboard/_lib/api";
 import {
@@ -7,6 +8,10 @@ import {
 } from "@/app/dashboard/_lib/actions";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
 import { UserTable } from "@/app/dashboard/_components/UserTable";
+
+export const metadata: Metadata = {
+  title: "Manage Users",
+};
 
 export default async function AdminUsersPage() {
   const { token } = await requireAuth(["Admin"]);

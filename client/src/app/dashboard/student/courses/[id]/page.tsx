@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -23,6 +24,10 @@ import {
   touchEnrollmentLastAccessed,
 } from "../../_lib/api";
 import { requireStudentAuth } from "../../_lib/auth";
+
+export const metadata: Metadata = {
+  title: "Course",
+};
 
 interface CourseDetailPageProps {
   params: Promise<{ id: string }>;

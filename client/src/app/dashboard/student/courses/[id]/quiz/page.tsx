@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -6,6 +7,10 @@ import { ChevronLeft } from "lucide-react";
 import QuizForm from "./_components/QuizForm";
 import { getCourseWithLessons, getLessonProgresses, getMyQuizAttempts, getQuizForCourse } from "../../../_lib/api";
 import { requireStudentAuth } from "../../../_lib/auth";
+
+export const metadata: Metadata = {
+  title: "Quiz",
+};
 
 interface QuizPageProps {
   params: Promise<{ id: string }>;

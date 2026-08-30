@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { FaqSection } from "../_components/FaqSection";
 import { Section, SectionHeader } from "../_components/Section";
 import { Reveal } from "../_components/motion/Reveal";
+
+export const metadata: Metadata = {
+  title: "About",
+};
 
 function About() {
   return (
