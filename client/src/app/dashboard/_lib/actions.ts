@@ -3,6 +3,7 @@
 import { requireAuth } from "./auth";
 import {
   createCourse,
+  updateCourse,
   deleteCourse,
   deleteBlogPost,
   createBlogPost,
@@ -111,6 +112,85 @@ export async function createCourseAction(
   }
 }
 
+export async function updateCourseAction(
+  id: string,
+  formData: FormData,
+): Promise<CourseActionResult> {
+  try {
+    const { token, me } = await requireAuth([
+      "Instructor",
+      "Content Manager",
+      "Admin",
+    ]);
+
+    const raw = {
+      title: formData.get("title"),
+      slug: formData.get("slug"),
+      shortDescription: formData.get("shortDescription"),
+      description: formData.get("description") || undefined,
+      level: formData.get("level"),
+      price: formData.get("price"),
+      isFree: formData.get("isFree") === "true",
+      isFeatured: formData.get("isFeatured") === "true",
+      tags: jsonOr("tags", formData),
+      instructor: formData.get("instructor") || undefined,
+    };
+
+    const parsed = courseSchema.safeParse(raw);
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid course data",
+      };
+    }
+
+    const isStaff =
+      me.role.name === "Admin" || me.role.name === "Content Manager";
+
+    let instructor: string | undefined;
+    if (me.role.name === "Instructor") {
+      instructor = me.documentId;
+    } else {
+      instructor = typeof raw.instructor === "string" ? raw.instructor : undefined;
+    }
+
+    let thumbnailId: number | undefined;
+    const thumbFile = formData.get("thumbnail");
+    if (thumbFile instanceof File && thumbFile.size > 0 && thumbFile.name) {
+      const res = await uploadCourseThumbnail(thumbFile, token);
+      thumbnailId = res.data?.id;
+    }
+
+    const data: Record<string, unknown> = {
+      title: parsed.data.title,
+      slug: parsed.data.slug,
+      shortDescription: parsed.data.shortDescription,
+      description: textToBlocks(parsed.data.description),
+      level: parsed.data.level,
+      price: parsed.data.price ?? 0,
+      isFree: parsed.data.isFree,
+      tags: parsed.data.tags ?? [],
+    };
+    if (isStaff) {
+      data.isFeatured = parsed.data.isFeatured;
+    }
+    if (instructor) {
+      data.instructor = instructor;
+    }
+    if (thumbnailId !== undefined) {
+      data.thumbnail = thumbnailId;
+    }
+
+    await updateCourse(id, data, token);
+    return { success: true };
+  } catch (err: unknown) {
+    console.error("Course update failed", err);
+    const message =
+      err instanceof Error ? err.message : "Failed to update course";
+    return { success: false, error: message };
+  }
+}
+
 export async function deleteCourseAction(id: string): Promise<CourseActionResult> {
   try {
     const { token } = await requireAuth(["Instructor", "Content Manager", "Admin"]);
@@ -213,8 +293,10 @@ export async function updateUserRoleAction(
     const { token } = await requireAuth(["Admin"]);
     await adminUpdateUserRole(documentId, role, token);
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Failed to update role" };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to update role";
+    return { success: false, error: message };
   }
 }
 
@@ -225,8 +307,10 @@ export async function toggleBlockUserAction(
     const { token } = await requireAuth(["Admin"]);
     const res = await adminToggleBlockUser(documentId, token);
     return { success: true, blocked: res.data?.blocked };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Failed to toggle block status" };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to toggle block status";
+    return { success: false, error: message };
   }
 }
 
@@ -238,8 +322,10 @@ export async function updateUserAction(
     const { token } = await requireAuth(["Admin"]);
     await adminUpdateUser(documentId, data, token);
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Failed to update user profile" };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to update user profile";
+    return { success: false, error: message };
   }
 }
 

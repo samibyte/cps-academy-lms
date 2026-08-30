@@ -6,15 +6,19 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/DataTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Trash2 } from "lucide-react";
+import { Settings, Trash2, Pencil } from "lucide-react";
 import type { Course } from "@/app/dashboard/_lib/types";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { EditCourseDialog } from "./EditCourseDialog";
+import type { InstructorSummary } from "@/app/dashboard/_lib/api";
 
 interface CourseTableProps {
   courses: Course[];
   basePath: string;
   showOwner?: boolean;
   onDelete?: (courseId: string) => Promise<void>;
+  canSelectInstructor?: boolean;
+  instructors?: InstructorSummary[];
 }
 
 export function CourseTable({
@@ -22,6 +26,8 @@ export function CourseTable({
   basePath,
   showOwner,
   onDelete,
+  canSelectInstructor,
+  instructors,
 }: CourseTableProps) {
   const columns = useMemo<ColumnDef<Course>[]>(() => {
     const cols: ColumnDef<Course>[] = [
@@ -134,6 +140,20 @@ export function CourseTable({
             >
               <Settings className="size-4" />
             </Button>
+            <EditCourseDialog
+              course={row.original}
+              canSelectInstructor={!!canSelectInstructor}
+              instructors={instructors || []}
+              trigger={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-primary hover:bg-primary/10 hover:text-primary border-primary/20"
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              }
+            />
             {onDelete && (
               <ConfirmDialog
                 trigger={

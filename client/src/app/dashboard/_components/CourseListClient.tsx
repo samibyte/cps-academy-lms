@@ -5,14 +5,23 @@ import { toast } from "sonner";
 import { CourseTable } from "./CourseTable";
 import { deleteCourseAction } from "@/app/dashboard/_lib/actions";
 import type { Course } from "@/app/dashboard/_lib/types";
+import type { InstructorSummary } from "@/app/dashboard/_lib/api";
 
 interface CourseListClientProps {
   courses: Course[];
   basePath: string;
   showOwner?: boolean;
+  canSelectInstructor?: boolean;
+  instructors?: InstructorSummary[];
 }
 
-export function CourseListClient({ courses, basePath, showOwner }: CourseListClientProps) {
+export function CourseListClient({
+  courses,
+  basePath,
+  showOwner,
+  canSelectInstructor,
+  instructors,
+}: CourseListClientProps) {
   const router = useRouter();
 
   const handleDelete = async (id: string) => {
@@ -31,6 +40,8 @@ export function CourseListClient({ courses, basePath, showOwner }: CourseListCli
       basePath={basePath}
       showOwner={showOwner}
       onDelete={handleDelete}
+      canSelectInstructor={canSelectInstructor}
+      instructors={instructors}
     />
   );
 }

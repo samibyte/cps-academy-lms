@@ -300,7 +300,7 @@ export function QuizManager({
           <div>
             <CardTitle>{quiz.title}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              পাস: {quiz.passingScore}% · সময়: {quiz.timeLimit} মিনিট ·
+              পাস: {quiz.passingScore}% · সময়: {quiz.timeLimit / 60} মিনিট ·
               অ্যাটেম্পট: {quiz.maxAttempts}
             </p>
           </div>

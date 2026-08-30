@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { requireAuth } from "@/app/dashboard/_lib/auth";
-import { getAllCourses } from "@/app/dashboard/_lib/api";
+import { getAllCourses, getInstructors } from "@/app/dashboard/_lib/api";
 import type { Course } from "@/app/dashboard/_lib/types";
+import type { InstructorSummary } from "@/app/dashboard/_lib/api";
 import DashboardShell from "@/app/dashboard/_components/DashboardShell";
 import { CourseTable } from "@/app/dashboard/_components/CourseTable";
 import { StatCard } from "@/components/shared/StatCard";
@@ -17,11 +18,16 @@ export default async function ContentManagerOverviewPage() {
   const { token } = await requireAuth(["Content Manager", "Admin"]);
 
   let courses: Course[] = [];
+  let instructors: InstructorSummary[] = [];
   try {
-    const coursesRes = await getAllCourses(token);
+    const [coursesRes, instructorsRes] = await Promise.all([
+      getAllCourses(token),
+      getInstructors(token).catch(() => []),
+    ]);
     courses = coursesRes.data ?? [];
+    instructors = instructorsRes;
   } catch (err) {
-    console.error("[cm-overview] Failed to fetch courses", err);
+    console.error("[cm-overview] Failed to fetch data", err);
   }
 
   const totalCourses = courses.length;
@@ -62,6 +68,8 @@ export default async function ContentManagerOverviewPage() {
           courses={courses.slice(0, 10)}
           basePath="/dashboard/content-manager/courses"
           showOwner
+          canSelectInstructor
+          instructors={instructors}
         />
       </div>
     </DashboardShell>

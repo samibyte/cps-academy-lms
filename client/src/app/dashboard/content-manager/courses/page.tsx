@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireAuth } from "../../_lib/auth";
-import { getAllCourses } from "../../_lib/api";
+import { getAllCourses, getInstructors } from "../../_lib/api";
 import DashboardShell from "../../_components/DashboardShell";
 import { CourseListClient } from "../../_components/CourseListClient";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 export default async function ContentManagerCoursesPage() {
   const { token } = await requireAuth(["Content Manager", "Admin"]);
   
-  // Fetch ALL courses
-  const coursesRes = await getAllCourses(token);
+  const [coursesRes, instructors] = await Promise.all([
+    getAllCourses(token),
+    getInstructors(token).catch(() => []),
+  ]);
   const courses = coursesRes.data || [];
 
   return (
@@ -34,7 +36,13 @@ export default async function ContentManagerCoursesPage() {
         </Button>
       }
     >
-      <CourseListClient courses={courses} basePath="/dashboard/content-manager/courses" showOwner />
+      <CourseListClient
+        courses={courses}
+        basePath="/dashboard/content-manager/courses"
+        showOwner
+        canSelectInstructor
+        instructors={instructors}
+      />
     </DashboardShell>
   );
 }
