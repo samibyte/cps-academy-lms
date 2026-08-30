@@ -1,3 +1,4 @@
+import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 
 export default function MainLayout({ children }: LayoutProps<"/">) {
@@ -5,6 +6,7 @@ export default function MainLayout({ children }: LayoutProps<"/">) {
     <>
       <Navbar />
       {children}
+      <Footer />
     </>
   );
 }
