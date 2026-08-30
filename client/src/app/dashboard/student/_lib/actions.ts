@@ -8,18 +8,9 @@ import type {
   QuizAttempt,
   Quiz,
 } from "./types";
+import { getCookie } from "@/lib/cookieUtils";
 
-//  Auth helper
-
-async function getToken(): Promise<string> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
-  if (!token) throw new Error("No auth token");
-  return token;
-}
-
-// ─── Shared enrollment helper ─────────────────────────────────────────────────
-
+// Shared enrollment helper
 /**
  * Marks an enrollment as "completed" by doing a direct PUT.
  * Caller is responsible for any guard logic (e.g. checking all lessons are
@@ -110,7 +101,7 @@ async function checkAndMarkEnrollmentCompleteIfNoQuiz(
   }
 }
 
-// ─── Lesson completion ────────────────────────────────────────────────────────
+// ─── Lesson completion
 
 interface MarkCompleteResult {
   success: boolean;
@@ -130,7 +121,7 @@ export async function markLessonCompleteAction(
   courseDocId: string,
 ): Promise<MarkCompleteResult> {
   try {
-    const token = await getToken();
+    const token = await getCookie("accessToken");
 
     const existing = await apiClient<{ data: LessonProgress[] }>(
       `/api/lesson-progresses?filters[lesson][documentId][$eq]=${lessonDocId}&filters[course][documentId][$eq]=${courseDocId}&filters[student][documentId][$eq]=${studentDocId}&pagination[pageSize]=1`,
@@ -240,7 +231,7 @@ export async function submitQuizAttemptAction(
   payload: SubmitQuizPayload,
 ): Promise<SubmitQuizResult> {
   try {
-    const token = await getToken();
+    const token = await getCookie("accessToken");
 
     // 1. Fetch quiz (questions + passingScore + timeLimit + maxAttempts)
     const quizRes = await apiClient<StrapiSingleResponse<Quiz>>(

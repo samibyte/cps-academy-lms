@@ -51,9 +51,7 @@ export async function getMyEnrollments(token: string, studentDocId?: string) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Course detail (lesson list)
-// ---------------------------------------------------------------------------
 
 /**
  * Fetch a single course with its full ordered lesson list.
@@ -62,11 +60,9 @@ export async function getCourseWithLessons(courseId: string, token: string) {
   return apiClient<StrapiSingleResponse<Course & { lessons: Lesson[] }>>(
     `/api/courses/${courseId}?` +
       `populate[lessons][sort][0]=order:asc` +
-      // thumbnail — explicit fields to avoid Strapi v5 "related" key error on upload type
       `&populate[thumbnail][fields][0]=url` +
       `&populate[thumbnail][fields][1]=alternativeText` +
       `&populate[thumbnail][fields][2]=formats` +
-      // instructor — only the name fields we display
       `&populate[instructor][fields][0]=username` +
       `&populate[instructor][fields][1]=fullName` +
       `&populate[instructor][fields][2]=email`,
@@ -155,7 +151,9 @@ export async function buildProgressMap(
           token,
           studentDocId,
         );
-        progressMap[courseDocId] = progressRes.data.filter((p) => p.completed).length;
+        progressMap[courseDocId] = progressRes.data.filter(
+          (p) => p.completed,
+        ).length;
       } catch {
         progressMap[courseDocId] = 0;
       }
@@ -174,7 +172,9 @@ export async function touchEnrollmentLastAccessed(
   token: string,
 ): Promise<void> {
   try {
-    const enrollmentsRes = await apiClient<{ data: Array<{ id: number; documentId: string }> }>(
+    const enrollmentsRes = await apiClient<{
+      data: Array<{ id: number; documentId: string }>;
+    }>(
       `/api/enrollments` +
         `?filters[student][documentId][$eq]=${studentDocId}` +
         `&filters[course][documentId][$eq]=${courseDocId}` +
