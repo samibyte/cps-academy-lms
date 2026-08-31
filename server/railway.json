@@ -1,0 +1,8 @@
+{
+  "build": {
+    "buildCommand": "pnpm build"
+  },
+  "deploy": {
+    "startCommand": "strapi build && strapi start"
+  }
+}
